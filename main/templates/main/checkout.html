@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Sushi by RC | Checkout {% endblock %}
+{% block body %}
+
+<!-- PRESENTATION -->
+<div class="main-container">
+  <h1>
+    Checkout
+  </h1>
+  <h5>
+    We're almost there
+  </h5>
+</div>
+
+
+<!-- BILLING INFO/SUMMARY -->
+<div class="main-container">
+    <div class="checkout-billing-info-container">
+
+        <!-- BILLING INFO -->
+        <div class="register-form-pt1">
+            <h4>
+                Basics
+            </h4>
+            <label>
+            First Name
+            </label>
+            <br>
+            <input type="text">
+            <br>
+            <label>
+            Last Name
+            </label>
+            <br>
+            <input type="text">
+            <br>
+            <label>
+                Phone
+            </label>
+                <br>
+            <input type="text">
+            <br>
+            <label>
+                Email
+            </label>
+            <br>
+            <input type="text">
+        </div>
+        <div class="register-form-pt2">
+            <h4>
+                Shipping Address
+            </h4>
+            <label>
+            Street 1
+            </label>
+            <br>
+            <input type="text">
+            <br>
+            <label>
+                Street 2
+            </label>
+            <br>
+            <input type="text">
+            <br>
+            <label>
+                ZIP
+            </label>
+            <br>
+            <input type="text">
+            <br>
+
+             <!-- CHECKOUT BUTTON -->
+            <div class="checkout-button-container">
+                <a href="#">
+                    <button class="add-button">
+                        Pay Now
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- SUMMARY TABLE -->
+        <div class="checkout-summary-container">
+
+            <h4>
+                Your Order
+            </h4>
+            <table style="width: 100%; border-color: #333;">
+                <!-- loop throught the products on the session cart -->
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+                    </td>
+                    <td style="width: 75%;">
+                        <h6 style="margin: 0;">Dish Name - 4</h6>
+                        <p style="">
+                            Description
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: $1000</h6>
+                    </td>
+                </tr>
+            </table>
+
+
+            <!-- CHECKOUT BUTTON -->
+            <div class="checkout-button-container">
+                <a href="#">
+                    <button class="add-button">
+                        Pay Now
+                    </button>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -119,6 +119,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 STATIC_URL = 'static/'
 
+# this one is to create a folder for the admin uploaded files
+MEDIA_ROOT = BASE_DIR / 'uploads/main/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
 # this one defines the way the media can be accessed the moment it is uploaded
 MEDIA_URL = '/media/'

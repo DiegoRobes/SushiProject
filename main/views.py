@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-import main.models as m
+from . import models as m
 
 
 # Create your views here.
@@ -19,3 +19,13 @@ def details(request, slug):
 def about(request):
     context = {}
     return render(request, "main/about.html", context=context)
+
+
+def cart(request):
+    context = {'items': "This has to be a query of products, fetched from the db using slugs or other method"}
+    return render(request, "main/cart.html", context=context)
+
+
+def checkout(request):
+    context = {}
+    return render(request, "main/checkout.html", context=context)

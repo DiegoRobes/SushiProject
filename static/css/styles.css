@@ -444,3 +444,25 @@ button.edit-cart:hover{
 .details-img{
     width: 400px;
 }
+
+/******* CHECKOUT ******/
+.checkout-billing-info-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.checkout-summary-container{
+    width: 400px;
+}
+
+.checkout-button-container{
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.checkout-item-img{
+    height: 40px;
+    border-radius: 4px;
+}

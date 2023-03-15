@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Sushi by RC | Cart {% endblock %}
+{% block body %}
+
+{% if not items %}
+<!-- COVER -->
+<div class="main-container">
+    <div class="register-presentation-img-container">
+        <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+        <div class="presentation-text-empty-cart">
+            <div class="empty-cart-container">
+        <h1>
+            You cart is empty!
+        </h1>
+        <a href="{% url 'home' %}" >
+            <button type="button" class="logout-button back-to-store-button" >Back to store</button>
+        </a>
+    </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- RECOMMENDED -->
+<div class="main-container">
+
+    <div class="cart-recommended-container">
+        <div class="menu-item-card">
+            <h2 class="menu-item-type-dish">
+                Recommended
+            </h2>
+            <hr class="menu-item-hr">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Order
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="menu-item-card">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Order
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="menu-item-card">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Order
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endif %}
+
+
+
+{% if items %}
+<!-- COVER -->
+<div class="main-container">
+    <div class="register-presentation-img-container">
+        <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+            <div class="shipping-form-cart">
+                <div>
+                    <h2 class="display-fonts cart-title" >
+                        Cart
+                    </h2>
+                    <p>
+                        Please review your order before checkout
+                    </p>
+                    <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                        <h6 style="margin-top: 20px; margin-bottom: 0;">
+                            Products: (n°)
+                        </h6>
+                        <h6 style=" margin-bottom: 15px;">
+                            Total: $(n°) USD
+                        </h6>
+                         <a href="{% url 'checkout' %}">
+                            <button type="button" class="add-button">Checkout</button>
+                         </a>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+</div>
+
+<!-- CART -->
+<div class="main-container">
+
+    <!-- ITEMS -->
+    <div class="cart-items-container">
+
+        <table class="product-table cart-table" style="">
+                        <tr>
+                             <td>
+                                 <h6 class="article-name">Name of Dish</h6>
+                                 <form method="post">
+                                     <input name="sku" type="hidden">
+                                 </form>
+                                 <button type="submit" class="danger">Remove from Cart</button>
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                 <img class="cart-item-img" src="{% static 'images/cover.jpeg' %}">
+                            </td>
+                        </tr>
+                        <tr class="bottom-row" style="">
+                            <td style="text-align: center;">
+                                <table style="text-align: center; width: 100%">
+                                    <tr>
+                                        <td>
+                                            <table style="text-align: center; width: 100%">
+                                                <tr>
+                                                    <td style="text-align: left; padding-left: 5px;">
+                                                        <h6>Quantity:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <form method="post">
+                                                            <input type="hidden" name="sku" value="">
+                                                            <input class="item-quantity" type="number" value=""
+                                                                   name="save" min="1" max="5">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-left: 5px;">
+                                                        <h6 style="text-align: left;" class="item-price">Product:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <h6 class="item-price">$</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <button  type="submit" class="save_changes">
+                                                            Save Changes
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+        <table class="product-table cart-table" style="">
+                        <tr>
+                             <td>
+                                 <h6 class="article-name">Name of Dish</h6>
+                                 <form method="post">
+                                     <input name="sku" type="hidden">
+                                 </form>
+                                 <button type="submit" class="danger">Remove from Cart</button>
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                 <img class="cart-item-img" src="{% static 'images/cover.jpeg' %}">
+                            </td>
+                        </tr>
+                        <tr class="bottom-row" style="">
+                            <td style="text-align: center;">
+                                <table style="text-align: center; width: 100%">
+                                    <tr>
+                                        <td>
+                                            <table style="text-align: center; width: 100%">
+                                                <tr>
+                                                    <td style="text-align: left; padding-left: 5px;">
+                                                        <h6>Quantity:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <form method="post">
+                                                            <input type="hidden" name="sku" value="">
+                                                            <input class="item-quantity" type="number" value=""
+                                                                   name="save" min="1" max="5">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-left: 5px;">
+                                                        <h6 style="text-align: left;" class="item-price">Product:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <h6 class="item-price">$</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <button  type="submit" class="save_changes">
+                                                            Save Changes
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+        <table class="product-table cart-table" style="">
+                        <tr>
+                             <td>
+                                 <h6 class="article-name">Name of Dish</h6>
+                                 <form method="post">
+                                     <input name="sku" type="hidden">
+                                 </form>
+                                 <button type="submit" class="danger">Remove from Cart</button>
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                 <img class="cart-item-img" src="{% static 'images/cover.jpeg' %}">
+                            </td>
+                        </tr>
+                        <tr class="bottom-row" style="">
+                            <td style="text-align: center;">
+                                <table style="text-align: center; width: 100%">
+                                    <tr>
+                                        <td>
+                                            <table style="text-align: center; width: 100%">
+                                                <tr>
+                                                    <td style="text-align: left; padding-left: 5px;">
+                                                        <h6>Quantity:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <form method="post">
+                                                            <input type="hidden" name="sku" value="">
+                                                            <input class="item-quantity" type="number" value=""
+                                                                   name="save" min="1" max="5">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-left: 5px;">
+                                                        <h6 style="text-align: left;" class="item-price">Product:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <h6 class="item-price">$</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <button  type="submit" class="save_changes">
+                                                            Save Changes
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+        <table class="product-table cart-table" style="">
+                        <tr>
+                             <td>
+                                 <h6 class="article-name">Name of Dish</h6>
+                                 <form method="post">
+                                     <input name="sku" type="hidden">
+                                 </form>
+                                 <button type="submit" class="danger">Remove from Cart</button>
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                 <img class="cart-item-img" src="{% static 'images/cover.jpeg' %}">
+                            </td>
+                        </tr>
+                        <tr class="bottom-row" style="">
+                            <td style="text-align: center;">
+                                <table style="text-align: center; width: 100%">
+                                    <tr>
+                                        <td>
+                                            <table style="text-align: center; width: 100%">
+                                                <tr>
+                                                    <td style="text-align: left; padding-left: 5px;">
+                                                        <h6>Quantity:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <form method="post">
+                                                            <input type="hidden" name="sku" value="">
+                                                            <input class="item-quantity" type="number" value=""
+                                                                   name="save" min="1" max="5">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-left: 5px;">
+                                                        <h6 style="text-align: left;" class="item-price">Product:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <h6 class="item-price">$</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <button  type="submit" class="save_changes">
+                                                            Save Changes
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+        <table class="product-table cart-table" style="">
+                        <tr>
+                             <td>
+                                 <h6 class="article-name">Name of Dish</h6>
+                                 <form method="post">
+                                     <input name="sku" type="hidden">
+                                 </form>
+                                 <button type="submit" class="danger">Remove from Cart</button>
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                 <img class="cart-item-img" src="{% static 'images/cover.jpeg' %}">
+                            </td>
+                        </tr>
+                        <tr class="bottom-row" style="">
+                            <td style="text-align: center;">
+                                <table style="text-align: center; width: 100%">
+                                    <tr>
+                                        <td>
+                                            <table style="text-align: center; width: 100%">
+                                                <tr>
+                                                    <td style="text-align: left; padding-left: 5px;">
+                                                        <h6>Quantity:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <form method="post">
+                                                            <input type="hidden" name="sku" value="">
+                                                            <input class="item-quantity" type="number" value=""
+                                                                   name="save" min="1" max="5">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-left: 5px;">
+                                                        <h6 style="text-align: left;" class="item-price">Product:</h6>
+                                                    </td>
+                                                    <td style="text-align: right; padding-right: 10px;">
+                                                        <h6 class="item-price">$</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <button  type="submit" class="save_changes">
+                                                            Save Changes
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+    </div>
+
+    <!-- CHECKOUT BUTTON -->
+    <div class="to-checkout-button-container">
+        <a href="{% url 'checkout' %}">
+            <button type="button" class="add-button" style="margin-bottom: 50px; height: 40px;">Checkout</button>
+        </a>
+    </div>
+
+</div>
+{% endif %}
+{% endblock %}
