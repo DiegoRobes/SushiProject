@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Sushi by RC{% endblock %}
+{% block body %}
+
+
+<!-- MAIN COVER -->
+<div>
+    <img class="main-cover" src="{% static 'images/cover.jpeg' %}">
+</div>
+
+
+<!-- FEATURED SECTION -->
+<div class="main-container featured-container">
+    <div class="featured-title">
+        <h1 class="">
+            Featured
+        </h1>
+    </div>
+        <div class="featured-card">
+            <div class="featured-img-container">
+                <img class="featured-img" src="{% static 'images/cover.jpeg' %}">
+            </div>
+            <div class="featured-text">
+                <h5>
+                    Name of Dish
+                </h5>
+                <p class="">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iure
+                    ullam animi repellat non ut delectus culpa! Iste quia corporis
+                    illum doloribus facilis quo totam eveniet sapiente odit
+                    cupiditate? Cumque, nam?
+                </p>
+                <a href="#">
+                    <button class="add-button">
+                        Add to Cart
+                    </button>
+                </a>
+            </div>
+    </div>
+    <hr>
+</div>
+
+
+<!-- MENU -->
+<div class="main-container">
+
+    <div class="menu-title-container">
+        <h1 class="menu-title">
+           Our Menu
+        </h1>
+    </div>
+
+    <!-- ENTRIES -->
+    <div class="menu-container">
+        <div class="menu-item-card">
+            <h2 class="menu-item-type-dish">
+                Entries
+            </h2>
+            <hr class="menu-item-hr">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="menu-item-card">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- SOUPS -->
+    <div class="menu-container">
+        <h2 class="menu-item-type-dish">
+            Soups
+        </h2>
+    </div>
+    <div class="menu-container">
+        {% for i in dishes %}
+        <div class="menu-item-card">
+            <hr class="menu-item-hr">
+            <h5 class="menu-item-title">
+                {{ i.name }}
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                            <a href="{% url 'details' i.slug %}">
+                                <img class="menu-item-img" src="{{ i.img.url }}">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            {{ i.description|truncatechars:75 }}
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- MAINS -->
+    <div class="menu-container">
+        <div class="menu-item-card">
+            <h2 class="menu-item-type-dish">
+                Mains
+            </h2>
+            <hr class="menu-item-hr">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="menu-item-card">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- DESSERTS -->
+    <div class="menu-container">
+        <div class="menu-item-card">
+            <h2 class="menu-item-type-dish">
+                Desserts
+            </h2>
+            <hr class="menu-item-hr">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="menu-item-card">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- REFRESHMENTS -->
+    <div class="menu-container">
+        <div class="menu-item-card">
+            <h2 class="menu-item-type-dish">
+                Refreshments
+            </h2>
+            <hr class="menu-item-hr">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="menu-item-card">
+            <h5 class="menu-item-title">
+                Name of Dish
+            </h5>
+            <table>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-description">
+                        <p class="menu-item-p">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        </p>
+                    </td>
+                    <td class="menu-item-button-container">
+                        <button class=" add-button">
+                            Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}

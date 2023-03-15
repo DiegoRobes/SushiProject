@@ -1,0 +1,35 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N801" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="job_app_project.app_folder.urls.*" />
+          <option value="job_app_project.app_folder.views.app_folder" />
+          <option value="job_app_project.app_folder.models.JobPost.id" />
+          <option value="job_app_project.app_folder.admin.app_folder" />
+          <option value="job_app_project.subscribe.urls.subscribe" />
+          <option value="job_app_project.subscribe.views.subscribe" />
+          <option value="job_app_project.subscribe.forms.subscribe" />
+          <option value="job_app_project.upload.views.upload" />
+          <option value="job_app_project.upload.urls.upload" />
+          <option value="job_app_project.upload.forms.upload" />
+          <option value="Project.restaurant.urls.restaurant" />
+          <option value="main.models.Post.objects" />
+          <option value="main.models.Comments.objects" />
+          <option value="main.models.Tag.objects" />
+          <option value="main.models.WebsiteInfo.objects" />
+          <option value="main.models.Profile.objects" />
+          <option value="Project.restaurant.views.restaurant" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

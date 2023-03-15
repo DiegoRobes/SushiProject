@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Sushi by RC | Details{% endblock %}
+{% block body %}
+<div class="main-container">
+
+  <div class="details-container">
+        <div class="details-img">
+          <img src="{{ selected.img.url }}">
+        </div>
+
+        <div class="details-text-buttons">
+            <h1>
+              {{selected.name}}
+            </h1>
+            <p>
+              {{selected.description}}
+            </p>
+            <div class="details-buttons">
+                <h1>
+                  ${{selected.price}}
+                </h1>
+                <button class="add-to-cart">
+                  Add to Cart
+                </button>
+            </div>
+        </div>
+  </div>
+
+</div>
+{% endblock %}
