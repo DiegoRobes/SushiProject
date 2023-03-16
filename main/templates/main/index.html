@@ -19,21 +19,20 @@
     </div>
         <div class="featured-card">
             <div class="featured-img-container">
-                <img class="featured-img" src="{% static 'images/cover.jpeg' %}">
+                <img class="featured-img" src="{{ featured.img.url }}">
             </div>
             <div class="featured-text">
                 <h5>
-                    Name of Dish
+                    {{ featured.name }}
                 </h5>
                 <p class="">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iure
-                    ullam animi repellat non ut delectus culpa! Iste quia corporis
-                    illum doloribus facilis quo totam eveniet sapiente odit
-                    cupiditate? Cumque, nam?
+                    {{ featured.description }}
                 </p>
+                <input class="featured-quantity-selector" type="number" min="1" value="1">
+                <br>
                 <a href="#">
                     <button class="add-button">
-                        Add to Cart
+                        Add to Cart now
                     </button>
                 </a>
             </div>
@@ -53,80 +52,27 @@
 
     <!-- ENTRIES -->
     <div class="menu-container">
-        <div class="menu-item-card">
-            <h2 class="menu-item-type-dish">
-                Entries
-            </h2>
-            <hr class="menu-item-hr">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
-            <table>
-                <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
-                        </div>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
-                    </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div class="menu-item-card">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
-            <table>
-                <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
-                        </div>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
-                    </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
-
-    <!-- SOUPS -->
-    <div class="menu-container">
         <h2 class="menu-item-type-dish">
-            Soups
+            Entries
         </h2>
     </div>
     <div class="menu-container">
-        {% for i in dishes %}
+        {% for i in entries %}
         <div class="menu-item-card">
             <hr class="menu-item-hr">
-            <h5 class="menu-item-title">
-                {{ i.name }}
-            </h5>
             <table>
+                <tr>
+                    <td class="menu-item-title">
+                        <div>
+                            <h5>
+                            {{ i.name }} - ${{ i.price}}
+                            </h5>
+                        </div>
+                        <div>
+                            <input class="featured-quantity-selector" type="number" min="1" value="1">
+                        </div>
+                    </td>
+                </tr>
                 <tr>
                     <td class="menu-item-img-td" colspan="2">
                         <div class="menu-item-img-container">
@@ -137,10 +83,58 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            {{ i.description|truncatechars:75 }}
-                        </p>
+                    <td class="menu-item-add-button">
+                        <a href="#">
+                            <button class="add-button">
+                                Add to Cart now
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- SOUPS -->
+    <div class="menu-container">
+        <h2 class="menu-item-type-dish">
+            Soups
+        </h2>
+    </div>
+    <div class="menu-container">
+        {% for i in soups %}
+        <div class="menu-item-card">
+            <hr class="menu-item-hr">
+            <table>
+                <tr>
+                    <td class="menu-item-title">
+                        <div>
+                            <h5>
+                            {{ i.name }} - ${{ i.price}}
+                            </h5>
+                        </div>
+                        <div>
+                            <input class="featured-quantity-selector" type="number" min="1" value="1">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                            <a href="{% url 'details' i.slug %}">
+                                <img class="menu-item-img" src="{{ i.img.url }}">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-add-button">
+                        <a href="#">
+                            <button class="add-button">
+                                Add to Cart now
+                            </button>
+                        </a>
                     </td>
                 </tr>
             </table>
@@ -150,190 +144,141 @@
 
     <!-- MAINS -->
     <div class="menu-container">
-        <div class="menu-item-card">
-            <h2 class="menu-item-type-dish">
-                Mains
-            </h2>
-            <hr class="menu-item-hr">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
-            <table>
-                <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
-                        </div>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
-                    </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div class="menu-item-card">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
-            <table>
-                <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
-                        </div>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
-                    </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <h2 class="menu-item-type-dish">
+            Mains
+        </h2>
     </div>
-
-    <!-- DESSERTS -->
     <div class="menu-container">
+        {% for i in mains %}
         <div class="menu-item-card">
-            <h2 class="menu-item-type-dish">
-                Desserts
-            </h2>
             <hr class="menu-item-hr">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
             <table>
                 <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                    <td class="menu-item-title">
+                        <div>
+                            <h5>
+                            {{ i.name }} - ${{ i.price}}
+                            </h5>
                         </div>
-
+                        <div>
+                            <input class="featured-quantity-selector" type="number" min="1" value="1">
+                        </div>
                     </td>
                 </tr>
                 <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                            <a href="{% url 'details' i.slug %}">
+                                <img class="menu-item-img" src="{{ i.img.url }}">
+                            </a>
+                        </div>
                     </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
+                </tr>
+                <tr>
+                    <td class="menu-item-add-button">
+                        <a href="#">
+                            <button class="add-button">
+                                Add to Cart now
+                            </button>
+                        </a>
                     </td>
                 </tr>
             </table>
         </div>
-        <div class="menu-item-card">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
-            <table>
-                <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
-                        </div>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
-                    </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        {% endfor %}
     </div>
 
-    <!-- REFRESHMENTS -->
+    <!-- DESSERTS-->
     <div class="menu-container">
+        <h2 class="menu-item-type-dish">
+            Desserts
+        </h2>
+    </div>
+    <div class="menu-container">
+        {% for i in desserts %}
         <div class="menu-item-card">
-            <h2 class="menu-item-type-dish">
-                Refreshments
-            </h2>
             <hr class="menu-item-hr">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
             <table>
                 <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
+                    <td class="menu-item-title">
+                        <div>
+                            <h5>
+                            {{ i.name }} - ${{ i.price}}
+                            </h5>
                         </div>
-
+                        <div>
+                            <input class="featured-quantity-selector" type="number" min="1" value="1">
+                        </div>
                     </td>
                 </tr>
                 <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                            <a href="{% url 'details' i.slug %}">
+                                <img class="menu-item-img" src="{{ i.img.url }}">
+                            </a>
+                        </div>
                     </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
+                </tr>
+                <tr>
+                    <td class="menu-item-add-button">
+                        <a href="#">
+                            <button class="add-button">
+                                Add to Cart now
+                            </button>
+                        </a>
                     </td>
                 </tr>
             </table>
         </div>
-        <div class="menu-item-card">
-            <h5 class="menu-item-title">
-                Name of Dish
-            </h5>
-            <table>
-                <tr>
-                    <td class="menu-item-img-td" colspan="2">
-                        <div class="menu-item-img-container">
-                           <img class="menu-item-img" src="{% static 'images/cover.jpeg' %}">
-                        </div>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="menu-item-description">
-                        <p class="menu-item-p">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        </p>
-                    </td>
-                    <td class="menu-item-button-container">
-                        <button class=" add-button">
-                            Add to Cart
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        {% endfor %}
     </div>
 
+    <!-- REFRESH -->
+    <div class="menu-container">
+        <h2 class="menu-item-type-dish">
+            Refreshments
+        </h2>
+    </div>
+    <div class="menu-container">
+        {% for i in refreshments %}
+        <div class="menu-item-card">
+            <hr class="menu-item-hr">
+            <table>
+                <tr>
+                    <td class="menu-item-title">
+                        <div>
+                            <h5>
+                            {{ i.name }} - ${{ i.price}}
+                            </h5>
+                        </div>
+                        <div>
+                            <input class="featured-quantity-selector" type="number" min="1" value="1">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-img-td" colspan="2">
+                        <div class="menu-item-img-container">
+                            <a href="{% url 'details' i.slug %}">
+                                <img class="menu-item-img" src="{{ i.img.url }}">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="menu-item-add-button">
+                        <a href="#">
+                            <button class="add-button">
+                                Add to Cart now
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
 
 </div>
 {% endblock %}

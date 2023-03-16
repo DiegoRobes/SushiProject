@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Sushi by RC | Details{% endblock %}
+{% block title %} Sushi by RC | Details {% endblock %}
 {% block body %}
 <div class="main-container">
 
   <div class="details-container">
-        <div class="details-img">
-          <img src="{{ selected.img.url }}">
+        <div class="details-img-container">
+          <img class="details-img" src="{{ selected.img.url }}">
         </div>
 
         <div class="details-text-buttons">
@@ -20,7 +20,7 @@
                 <h1>
                   ${{selected.price}}
                 </h1>
-                <button class="add-to-cart">
+                <button class="add-button">
                   Add to Cart
                 </button>
             </div>
