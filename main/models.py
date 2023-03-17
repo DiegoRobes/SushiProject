@@ -58,6 +58,26 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
+    # this method returns the total price of the cart
+    @property
+    def get_total_price(self):
+        # first we get all the items using the orderitem model for it
+        items = self.orderitem_set.all()
+        # then the total price of each individual item by looping in the items var just created,
+        # and accessing each one's total cost (check that method in the orderitem model)
+        total = sum([item.get_total for item in items])
+        return total
+
+    # this method returns the total n° of products in the cart
+    @property
+    def get_total_items(self):
+        # first we get all the items using the orderitem model for it
+        items = self.orderitem_set.all()
+        # then the total quantity of each individual item by looping in the items var just created,
+        # and accessing each one's quantity field
+        total = sum([item.quantity for item in items])
+        return total
+
 
 # ORDER ITEM IS A PRODUCT INSIDE THE CART
 # keep in mind that we will have many OI, and all of them will be mapped to a product, to know which product it is,
@@ -68,6 +88,14 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
+
+    # this next method does the function of calculating the total value of the product and returning it.
+    # to do so, we need to access the price of the product, by using the foreign key of product, so
+    # we go product.price. to call the method: {{i.get_total}}
+    @property
+    def get_total(self):
+        total = self.product.price * self.quantity
+        return total
 
 
 # the shipping model has a field mapped to the customer, to know who this address object belongs to, and to an order,

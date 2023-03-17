@@ -41,15 +41,7 @@ def welcome(request):
 
 
 def sign_up(request):
-    form = f.CustomerRegistration
-    if request.POST:
-        register_form = f.CustomerRegistration(request.POST)
-        if register_form.is_valid():
-            register_form.save()
-            request.session['subscribe'] = True
-            context = {}
-            return HttpResponseRedirect(reverse('dashboard'))
-    context = {'form': form}
+    context = {}
     return render(request, "main/sign_up.html", context=context)
 
 
@@ -75,16 +67,30 @@ def about(request):
 
 
 def cart(request):
+    # if the user is auth, then we get the customer linked to them
+    context = {}
     if request.user.is_authenticated:
         customer = request.user.customer
+        # here we create or get the order, and find one that matches the customer in turn and is also open
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        # then get the items of this particular order and send them to the context dict
         items = order.orderitem_set.all()
-    else:
-        items = []
-    context = {'items': items}
+        context['items'] = items
+        # finally we gather the whole order, in order to use the get methods for total prices and quantities
+        context['order'] = order
+
     return render(request, "main/cart.html", context=context)
 
 
 def checkout(request):
     context = {}
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        # here we create or get the order, and find one that matches the customer in turn and is also open
+        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        # then get the items of this particular order and send them to the context dict
+        items = order.orderitem_set.all()
+        context['items'] = items
+        # finally we gather the whole order, in order to use the get methods for total prices and quantities
+        context['order'] = order
     return render(request, "main/checkout.html", context=context)
