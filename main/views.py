@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from . import models as m
+from . import forms as f
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -32,6 +35,34 @@ def home(request):
     return render(request, "main/index.html", context=context)
 
 
+def welcome(request):
+    context = {}
+    return render(request, "main/welcome.html", context=context)
+
+
+def sign_up(request):
+    form = f.CustomerRegistration
+    if request.POST:
+        register_form = f.CustomerRegistration(request.POST)
+        if register_form.is_valid():
+            register_form.save()
+            request.session['subscribe'] = True
+            context = {}
+            return HttpResponseRedirect(reverse('dashboard'))
+    context = {'form': form}
+    return render(request, "main/sign_up.html", context=context)
+
+
+def login(request):
+    context = {}
+    return render(request, "main/login.html", context=context)
+
+
+def dashboard(request):
+    context = {}
+    return render(request, "main/dashboard.html", context=context)
+
+
 def details(request, slug):
     selected = m.Product.objects.get(slug=slug)
     context = {'selected': selected}
@@ -44,7 +75,13 @@ def about(request):
 
 
 def cart(request):
-    context = {'items': "This has to be a query of products, fetched from the db using slugs or other method"}
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+    else:
+        items = []
+    context = {'items': items}
     return render(request, "main/cart.html", context=context)
 
 

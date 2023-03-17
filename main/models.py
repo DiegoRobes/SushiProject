@@ -16,7 +16,7 @@ class Customer(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(max_length=100, default="")
+    description = models. TextField(max_length=100, default="")
     slug = models.SlugField(max_length=200, unique=True)
 
     # this one creates a slug for any new entry on the tag models

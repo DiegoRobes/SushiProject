@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Sushi by RC | My Account {% endblock %}
+{% block body %}
+
+<!-- PRESENTATION -->
+<div class="main-container">
+    <div class="register-presentation-img-container">
+        <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+        <div class="presentation-text">
+            <h1 class="display-fonts">
+                Hello (user.name)
+            </h1>
+            <p>
+                Welcome back!
+                <br>
+                This is your account.
+            </p>
+            <div class="log-out-button-container" >
+                    <a href="{% url 'home' %}" >
+                        <button type="button" class="logout-button" >Log out</button>
+                    </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- BILLING DETAILS FORM -->
+<div class="main-container">
+    <form id="form">
+    </form>
+
+    <div class="register-form-container">
+        <div class="register-form-pt1">
+            <h4>
+                Shipping Address
+            </h4>
+            <p style="color: grey;">
+            You can update your billing details right here if you need to.
+            <br>
+            Otherwise, just ignore this form.
+            </p>
+            <label>
+            Street 1
+            </label>
+            <br>
+            <input type="text">
+            <br>
+            <label>
+                Street 2
+            </label>
+            <br>
+            <input type="text">
+            <br>
+            <label>
+                ZIP
+            </label>
+            <br>
+            <input type="text">
+            <br>
+            <div class="update-info-button-container">
+                <button class="add-button"> Update Info </button>
+            </div>
+        </div>
+        <div class="register-form-pt2">
+            <h4>
+                Orders
+            </h4>
+            <p style="color: grey;">
+                Check on your order history here.
+            </p>
+            <div class="update-info-button-container">
+                <button class="add-button"> Go </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

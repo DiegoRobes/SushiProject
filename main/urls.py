@@ -8,6 +8,10 @@ urlpatterns = [
     path('', v.home, name="home"),
     path('details/<slug:slug>', v.details, name="details"),
     path('about', v.about, name="about"),
+    path('welcome', v.welcome, name="welcome"),
+    path('sign_up', v.sign_up, name="sign_up"),
+    path('login', v.login, name="login"),
     path('cart', v.cart, name="cart"),
     path('checkout', v.checkout, name="checkout"),
+    path('dashboard', v.dashboard, name="dashboard"),
 ]

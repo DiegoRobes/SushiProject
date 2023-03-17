@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Sushi by RC | Welcome {% endblock %}
+{% block body %}
+
+<!-- PRESENTATION -->
+<div class="main-container">
+    <div class="register-presentation-img-container">
+        <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+        <div class="presentation-text">
+            <h1 class="display-fonts">
+                Welcome
+            </h1>
+            <p>
+                Please choose what to do.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<!-- SUBSCRIPTION FORM -->
+<div class="main-container">
+
+    <div class="user-dashboard-container">
+
+        <div class="user-options" >
+            <a href="{% url 'login' %}">
+                <button type="button" class="user user-options-button">
+                    Log In
+                    <br>
+                    <i class="fa-solid fa-right-to-bracket fa-lg user-icons"></i>
+                </button>
+            </a>
+            <p style="color: grey;">If you have an account</p>
+        </div>
+
+        <div class="user-options" >
+            <a href="{% url 'sign_up' %}">
+                <button type="button" class="user user-options-button">
+                    Sign Up
+                    <br>
+                    <i class="fa-solid fa-user-plus fa-lg user-icons"></i>
+                </button>
+            </a>
+            <p style="color: grey;">To create an account</p>
+        </div>
+
+    </div>
+
+
+
+
+
+
+</div>
+{% endblock %}
