@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from . import models as m
 from . import forms as f
 from django.contrib.auth.models import User
+import json
 
 
 # Create your views here.
@@ -94,3 +95,10 @@ def checkout(request):
         # finally we gather the whole order, in order to use the get methods for total prices and quantities
         context['order'] = order
     return render(request, "main/checkout.html", context=context)
+
+
+def update_item(request):
+    data = json.loads(request.body)
+    print('id: ', data['product_id'], 'action: ', data['action'])
+
+    return JsonResponse('item added to the cart', safe=False)
