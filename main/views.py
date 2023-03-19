@@ -97,8 +97,33 @@ def checkout(request):
     return render(request, "main/checkout.html", context=context)
 
 
+# once the request is passed using the js function on the other side, we can access the request dictionary
+# and its contents. check the (request.body), it is accessing the key of body from that dict
+# then we return a response that will be rendered by the js function, in the form of a json
 def update_item(request):
     data = json.loads(request.body)
-    print('id: ', data['product_id'], 'action: ', data['action'])
+    product_id = data['product_id']
+    action = data['action']
+
+    # once the request dict is here, we begin to create the order proper. for that, first we get the user. check that
+    # var in base template. then get the id from the dictionary to get the right object from the db
+    # after that we create a variable that contains an order and assign the customer to that order
+    # then the same with an OrderItem variable. using the dictionary contents to link the OrderItem to the right
+    # product and order
+    customer = request.user.customer
+    product = m.Product.objects.get(id=product_id)
+    order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+    orderItem, created = m.OrderItem.objects.get_or_create(order=order, product=product)
+
+    # then we check what the action is and see what to do. then save the orderItem object to the db
+    if action == 'add':
+        orderItem.quantity += 1
+    elif action == 'remove':
+        orderItem.quantity -= 1
+    orderItem.save()
+
+    # finally, if the orderItem quant arrives at 0, we simply delete the object. the item is no longer in the cart
+    if orderItem.quantity <= 0:
+        orderItem.delete()
 
     return JsonResponse('item added to the cart', safe=False)
