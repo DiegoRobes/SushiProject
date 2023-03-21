@@ -6,9 +6,9 @@ from django.utils.text import slugify
 # user is OneToOne bc one customer can only have one username
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    """f_name = models.CharField(max_length=200, null=True)
+    f_name = models.CharField(max_length=200, null=True)
     l_name = models.CharField(max_length=200, null=True)
-    phone = models.CharField(max_length=200, null=True)"""
+    phone = models.CharField(max_length=200, null=True)
     email = models.EmailField(max_length=200)
 
     def __str__(self):

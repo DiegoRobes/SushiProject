@@ -34,7 +34,7 @@ def home(request):
                'refreshments': refreshments}
 
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer = request.user
         # here we create or get the order, and find one that matches the customer in turn and is also open
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
         # then get the items of this particular order and send them to the context dict
@@ -42,7 +42,7 @@ def home(request):
         context['items'] = items
         # finally we gather the whole order, in order to use the get methods for total prices and quantities
         context['order'] = order
-    print(request.user.customer.f_name)
+
     return render(request, "main/index.html", context=context)
 
 
@@ -53,17 +53,26 @@ def welcome(request):
 
 def sign_up(request):
     basics_form = f.UserForm()
-    context = {'basic_form': basics_form}
+    shipping_form = f.ShippingForm()
+    context = {'basics_form': basics_form, 'shipping_form': shipping_form}
     if request.POST:
         basics_form = f.UserForm(request.POST)
+        shipping_form = f.ShippingForm(request.POST)
         if basics_form.is_valid():
             new_user = User.objects.create_user(username=basics_form.cleaned_data['first_name'] +
-                                                         basics_form.cleaned_data['last_name'],
+                                                basics_form.cleaned_data['last_name'],
                                                 first_name=basics_form.cleaned_data['first_name'],
                                                 last_name=basics_form.cleaned_data['last_name'],
                                                 email=basics_form.cleaned_data['email'],
                                                 password=basics_form.cleaned_data['password'])
             new_user.save()
+            new_address = m.ShippingAddress(
+                customer=new_user,
+                street_1=shipping_form['street_1'].data,
+                street_2=shipping_form['street_2'].data,
+                zip=shipping_form['zip'].data
+            )
+            new_address.save()
     return render(request, "main/sign_up.html", context=context)
 
 
@@ -78,7 +87,6 @@ def dashboard(request):
 
 
 def details(request, slug):
-    print('slug:', slug)
     context = {}
     try:
         selected = m.Product.objects.get(slug=slug)
@@ -97,7 +105,7 @@ def cart(request):
     # if the user is auth, then we get the customer linked to them
     context = {}
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer = request.user
         # here we create or get the order, and find one that matches the customer in turn and is also open
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
         # then get the items of this particular order and send them to the context dict
@@ -112,7 +120,7 @@ def cart(request):
 def checkout(request):
     context = {}
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer = request.user
         # here we create or get the order, and find one that matches the customer in turn and is also open
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
         # then get the items of this particular order and send them to the context dict
@@ -137,7 +145,7 @@ def update_item(request):
     # product and order.
     # remember, the orderitems we create here will only be added the order of a logged-in user.
     # so if the user is not logged, nothing will happen to the cart
-    customer = request.user.customer
+    customer = request.user
     product = m.Product.objects.get(id=product_id)
     order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
     orderItem, created = m.OrderItem.objects.get_or_create(order=order, product=product)

@@ -269,26 +269,23 @@ button.user:hover{
     margin-top: 40px;
 }
 
-.register-form-pt1{
-    padding: 10px;
-    margin-bottom: 20px;
+.registration-form{
+    margin-top: 40px;
  }
 
-.register-form-pt2{
-    padding: 10px;
-    margin-bottom: 20px;
-
+.user-registration-form{
+    display: flex;
+    justify-content: space-around;
 }
 
-.register-form-pt3{
-    padding: 10px;
-    margin-bottom: 20px;
+.shipping-address-container{
+    text-align: right;
+
 }
 
 .register-form-submit-button{
     text-align: right;
 }
-
 
 /******* CLIENT ACCOUNT ******/
 .log-out-button-container{

@@ -15,8 +15,8 @@
     </li>
 {% endblock %}
 
-{% block body %}
 
+{% block body %}
 <!-- PRESENTATION -->
 <div class="main-container">
     <div class="register-presentation-img-container">
@@ -35,99 +35,27 @@
 
         </div>
     </div>
-
 </div>
 
 <!-- SUBSCRIPTION FORM -->
 <div class="main-container">
-
-    <div class="register-form-container">
-        <div class="register-form-pt1">
-            <form method="post" id="shit" action="{% url 'sign_up' %}">
-                {% csrf_token %}
-                {{ basic_form.as_p }}
-                <button type="submit">submit</button>
-            </form>
-            <h4>
-                Basics
-            </h4>
-            <label>
-            First Name
-            </label>
-            <br>
-            <input form="user_form" type="text" name="first_name">
-            <br>
-            <label>
-            Last Name
-            </label>
-            <br>
-            <input form="user_form" type="text" name="l_name">
-            <br>
-            <label>
-                Phone
-            </label>
-                <br>
-            <input form="user_form" type="text" name="phone">
-            <br>
-            <label>
-                Email
-            </label>
-            <br>
-            <input form="user_form" type="email" name="email">
-        </div>
-        <div class="register-form-pt2">
-            <h4>
-                Shipping Address
-            </h4>
-            <label>
-            Street 1
-            </label>
-            <br>
-            <input form="user_form" type="text" name="street_1">
-            <br>
-            <label>
-                Street 2
-            </label>
-            <br>
-            <input form="user_form" type="text" name="street_2">
-            <br>
-            <label>
-                ZIP
-            </label>
-            <br>
-            <input form="user_form" type="text" name="zip">
-            <br>
-        </div>
-        <div class="register-form-pt3">
-            <h4>
-                Password
-            </h4>
-            <label>
-                Create a secure password
-            </label>
-            <br>
-            <input form="user_form" type="password">
-            <br>
-            <label>
-                Repeat Password
-            </label>
-            <br>
-            <input form="user_form" type="password">
-            <br>
-            <div class="register-form-submit-button">
-                <label>
-                    Subscribe to our
-                    <br>
-                    News Teller
-                </label>
-                <br>
-                <input form="user_form" type="checkbox">
-                <br>
-                <button form="user_form" type="submit" class="add-button"> Sign Up </button>
+    <form class="registration-form" method="post" action="{% url 'sign_up' %}">
+        {% csrf_token %}
+        <div class="user-registration-form">
+            <div>
+                <h4>
+                    Basics
+                </h4>
+                {{ basics_form|crispy }}
+            </div>
+            <div class="shipping-address-container">
+                <h4>
+                    Shipping Address
+                </h4>
+                {{ shipping_form|crispy }}
+                <button type="submit" class="add-button">Submit</button>
             </div>
         </div>
-    </div>
-
-
+    </form>
 </div>
 {% endblock %}
