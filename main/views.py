@@ -33,6 +33,16 @@ def home(request):
                'desserts': desserts,
                'refreshments': refreshments}
 
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        # here we create or get the order, and find one that matches the customer in turn and is also open
+        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        # then get the items of this particular order and send them to the context dict
+        items = order.orderitem_set.all()
+        context['items'] = items
+        # finally we gather the whole order, in order to use the get methods for total prices and quantities
+        context['order'] = order
+
     return render(request, "main/index.html", context=context)
 
 
@@ -57,8 +67,13 @@ def dashboard(request):
 
 
 def details(request, slug):
-    selected = m.Product.objects.get(slug=slug)
-    context = {'selected': selected}
+    print('slug:', slug)
+    context = {}
+    try:
+        selected = m.Product.objects.get(slug=slug)
+        context = {'selected': selected}
+    except Exception as e:
+        print(e)
     return render(request, "main/details.html", context=context)
 
 
@@ -104,12 +119,13 @@ def update_item(request):
     data = json.loads(request.body)
     product_id = data['product_id']
     action = data['action']
-
     # once the request dict is here, we begin to create the order proper. for that, first we get the user. check that
     # var in base template. then get the id from the dictionary to get the right object from the db
     # after that we create a variable that contains an order and assign the customer to that order
     # then the same with an OrderItem variable. using the dictionary contents to link the OrderItem to the right
-    # product and order
+    # product and order.
+    # remember, the orderitems we create here will only be added the order of a logged-in user.
+    # so if the user is not logged, nothing will happen to the cart
     customer = request.user.customer
     product = m.Product.objects.get(id=product_id)
     order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
@@ -122,7 +138,10 @@ def update_item(request):
         orderItem.quantity -= 1
     orderItem.save()
 
-    # finally, if the orderItem quant arrives at 0, we simply delete the object. the item is no longer in the cart
+    if action == 'delete':
+        orderItem.delete()
+
+    # finally, if the orderItem quant reaches 0, we simply delete the object. the item is no longer in the cart
     if orderItem.quantity <= 0:
         orderItem.delete()
 

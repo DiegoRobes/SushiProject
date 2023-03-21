@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %} Sushi by RC | Details {% endblock %}
+{% block icons %}
+    <li class="nav-item ms-auto">
+        <a class="nav-link active navbar-icons" aria-current="page" href="{% url 'welcome' %}">
+            <i class="fa-solid fa-user"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'cart' %}">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'about' %}">
+            <i class="fa-solid fa-circle-info"></i>
+        </a>
+    </li>
+{% endblock %}
+
 {% block body %}
 <div class="main-container">
 
@@ -20,9 +38,11 @@
                 <h1>
                   ${{selected.price}}
                 </h1>
-                <button class="add-button">
-                  Add to Cart
+
+                <button data-product={{selected.id}} data-action="add" class="add-button update-cart">
+                    Add to Cart <i class="fa-solid fa-plus"></i>
                 </button>
+
             </div>
         </div>
   </div>

@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %} Sushi by RC | Checkout {% endblock %}
+{% block icons %}
+    <li class="nav-item ms-auto">
+        <a class="nav-link active navbar-icons" aria-current="page" href="{% url 'welcome' %}">
+            <i class="fa-solid fa-user"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'cart' %}">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'about' %}">
+            <i class="fa-solid fa-circle-info"></i>
+        </a>
+    </li>
+{% endblock %}
+
 {% block body %}
 
 <!-- PRESENTATION -->
@@ -73,7 +91,7 @@
              <!-- CHECKOUT BUTTON -->
             <div class="checkout-button-container">
                 <a href="#">
-                    <button class="add-button">
+                    <button class="add-button" onclick="shippingData()">
                         Pay Now
                     </button>
                 </a>
@@ -104,13 +122,13 @@
             </h4>
             <table style="width: 100%; border-color: #333;">
                 {% for i in items %}
-                <tr>
+                <tr class="bottom-row">
                     <td valign="top" style="width: 10%;">
                         <div style="text-align: center;">
                             <img class="checkout-item-img" src="{{ i.product.img.url }}">
                         </div>
                     </td>
-                    <td style="width: 75%;">
+                    <td class="summary-table-cell" style="width: 75%;">
                         <h6 style="margin: 0;">{{i.product.name}} - {{i.quantity}}</h6>
                         <p style="">
                             {{i.product.tag.all.0.name}}
@@ -121,15 +139,10 @@
                     </td>
                 </tr>
                 {% endfor %}
-                <tr>
-                    <td colspan="2">
+                <tr >
+                    <td colspan="3" class="price-row-division">
                         <h5>
-                            Total to pay:
-                        </h5>
-                    </td>
-                    <td colspan="1">
-                        <h5>
-                            ${{order.get_total_price}}
+                            Total to pay: ${{order.get_total_price}}
                         </h5>
                     </td>
                 </tr>
@@ -139,7 +152,7 @@
             <!-- CHECKOUT BUTTON -->
             <div class="checkout-button-container">
                 <a href="#">
-                    <button class="add-button">
+                    <button class="add-button" onclick="shippingData()">
                         Pay Now
                     </button>
                 </a>

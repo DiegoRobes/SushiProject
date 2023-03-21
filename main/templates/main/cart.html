@@ -1,8 +1,22 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %} Sushi by RC | Cart {% endblock %}
-{% block body %}
+{% block icons %}
+    <li class="nav-item ms-auto">
+        <a class="nav-link active navbar-icons" aria-current="page" href="{% url 'welcome' %}">
+            <i class="fa-solid fa-user"></i>
+        </a>
+    </li>
 
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'about' %}">
+            <i class="fa-solid fa-circle-info"></i>
+        </a>
+    </li>
+{% endblock %}
+
+
+{% block body %}
 
 <!-- IF CART IS EMPTY -->
 {% if not items %}
@@ -133,19 +147,24 @@
                     <h2 class="display-fonts cart-title" >
                         Cart
                     </h2>
-                    <p>
-                        Please review your order before checkout
-                    </p>
                     <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
-                        <h6 style="margin-top: 20px; margin-bottom: 0;">
+                        <p>
+                            Please review your order before checkout
+                        </p>
+                        <h5 style="margin-top: 0px; margin-bottom: 0;">
                             Products: {{order.get_total_items}}
-                        </h6>
-                        <h6 style=" margin-bottom: 15px;">
+                        </h5>
+                        <h5 style=" margin-bottom: 15px;">
                             Total: ${{order.get_total_price}} USD
-                        </h6>
-                         <a href="{% url 'checkout' %}">
-                            <button type="button" class="add-button">Checkout</button>
-                         </a>
+                        </h5>
+                        <div class="cart-w-items-cover-buttons">
+                             <a href="{% url 'checkout' %}">
+                                <button type="button" class="add-button">Checkout</button>
+                             </a>
+                            <a class="back-to-store-button" href="{% url 'home' %}">
+                                <button type="button" class="add-button">Store</button>
+                             </a>
+                        </div>
                     </div>
 
                 </div>
@@ -163,11 +182,8 @@
         <table class="product-table cart-table" style="">
                         <tr>
                              <td>
-                                 <h6 class="article-name">{{ i.product.name }}</h6>
-                                 <form method="post">
-                                     <input name="sku" type="hidden">
-                                 </form>
-                                 <button type="submit" class="danger">Remove from Cart</button>
+                                 <h4 class="article-name">{{ i.product.name }}</h4>
+                                 {{i.product.tag.all.0.name}}
                              </td>
                         </tr>
                         <tr>
@@ -182,30 +198,40 @@
                                         <td>
                                             <table style="text-align: center; width: 100%">
                                                 <tr>
-                                                    <td style="text-align: left; padding-left: 5px;">
-                                                        <h6>Quantity:</h6>
-                                                    </td>
-                                                    <td style="text-align: right; padding-right: 10px;">
-                                                        <form method="post">
-                                                            <input type="hidden" name="sku" value="">
-                                                            <input class="item-quantity" type="number" value="{{i.quantity}}"
-                                                                   name="save" min="1" >
-                                                        </form>
+                                                    <td style="text-align: center;">
+                                                        <h6>Quantity</h6>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding-left: 5px;">
-                                                        <h6 style="text-align: left;" class="item-price">Product:</h6>
+                                                    <td class="cart-table-quantity">
+                                                        <button class="cart-button"
+                                                                onclick="updateOrder({{i.product_id}}, 'remove')">
+                                                            <i class="fa-solid fa-minus"></i>
+                                                        </button>
+                                                        <h5>
+                                                            {{i.quantity}}
+                                                        </h5>
+                                                        <button class="cart-button"
+                                                                onclick="updateOrder({{i.product_id}}, 'add')">
+                                                            <i class="fa-solid fa-plus"></i>
+                                                        </button>
                                                     </td>
-                                                    <td style="text-align: right; padding-right: 10px;">
-                                                        <h6 class="item-price">${{i.get_total}}</h6>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="text-align: center;">
+                                                        <h6>Product</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="">
+                                                        <h6>${{i.get_total}}</h6>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="100%">
-                                                        <button  type="submit" class="save_changes">
-                                                            Save Changes
-                                                        </button>
+                                                        <button class="danger"
+                                                        onclick="updateOrder({{i.product_id}}, 'delete')">Remove</button>
                                                     </td>
                                                 </tr>
                                             </table>

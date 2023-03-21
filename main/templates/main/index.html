@@ -1,6 +1,30 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %} Sushi by RC{% endblock %}
+{% block icons %}
+    <li class="nav-item ms-auto">
+        <a class="nav-link active navbar-icons" aria-current="page" href="{% url 'welcome' %}">
+            <i class="fa-solid fa-user"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'cart' %}">
+            {% if not items %}
+            <i class="fa-solid fa-cart-shopping"></i>
+            {% endif %}
+
+            {% if items %}
+            <i class="fa-solid fa-cart-plus"></i>
+            {% endif %}
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'about' %}">
+            <i class="fa-solid fa-circle-info"></i>
+        </a>
+    </li>
+{% endblock %}
+
 {% block body %}
 
 
@@ -28,11 +52,10 @@
                 <p class="">
                     {{ featured.description }}
                 </p>
-                <input class="featured-quantity-selector" type="number" min="1" value="1">
                 <br>
                 <button data-product={{i.id}} data-action="add" class="add-button update-cart"
                         onclick="addToCart({{featured.id}}, 'add')">
-                    Add to Cart now
+                    Add to Cart <i class="fa-solid fa-plus"></i>
                 </button>
             </div>
     </div>
@@ -67,9 +90,6 @@
                             {{ i.name }} - ${{ i.price}}
                             </h5>
                         </div>
-                        <div>
-                            <input class="featured-quantity-selector" type="number" min="1" value="1">
-                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -85,7 +105,7 @@
                     <td class="menu-item-add-button">
                         <button data-product={{i.id}} data-action="add" class="add-button update-cart"
                                 onclick="addToCart({{i.id}}, 'add')">
-                            Add to Cart now
+                            Add to Cart <i class="fa-solid fa-plus"></i>
                         </button>
                     </td>
                 </tr>
@@ -112,9 +132,6 @@
                             {{ i.name }} - ${{ i.price}}
                             </h5>
                         </div>
-                        <div>
-                            <input class="featured-quantity-selector" type="number" min="1" value="1">
-                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -130,7 +147,7 @@
                     <td class="menu-item-add-button">
                         <button data-product={{i.id}} data-action="add" class="add-button update-cart"
                                 onclick="addToCart({{i.id}}, 'add')">
-                            Add to Cart now
+                            Add to Cart <i class="fa-solid fa-plus"></i>
                         </button>
                     </td>
                 </tr>
@@ -157,9 +174,6 @@
                             {{ i.name }} - ${{ i.price}}
                             </h5>
                         </div>
-                        <div>
-                            <input class="featured-quantity-selector" type="number" min="1" value="1">
-                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -175,7 +189,7 @@
                     <td class="menu-item-add-button">
                         <button data-product={{i.id}} data-action="add" class="add-button update-cart"
                                 onclick="addToCart({{i.id}}, 'add')">
-                            Add to Cart now
+                            Add to Cart <i class="fa-solid fa-plus"></i>
                         </button>
                     </td>
                 </tr>
@@ -202,9 +216,6 @@
                             {{ i.name }} - ${{ i.price}}
                             </h5>
                         </div>
-                        <div>
-                            <input class="featured-quantity-selector" type="number" min="1" value="1">
-                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -220,7 +231,7 @@
                     <td class="menu-item-add-button">
                         <button data-product={{i.id}} data-action="add" class="add-button update-cart"
                                 onclick="addToCart({{i.id}}, 'add')">
-                            Add to Cart now
+                            Add to Cart <i class="fa-solid fa-plus"></i>
                         </button>
                     </td>
                 </tr>
@@ -247,9 +258,6 @@
                             {{ i.name }} - ${{ i.price}}
                             </h5>
                         </div>
-                        <div>
-                            <input class="featured-quantity-selector" type="number" min="1" value="1">
-                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -265,7 +273,7 @@
                     <td class="menu-item-add-button">
                         <button data-product={{i.id}} data-action="add" class="add-button update-cart"
                                 onclick="addToCart({{i.id}}, 'add')">
-                            Add to Cart now
+                            Add to Cart <i class="fa-solid fa-plus"></i>
                         </button>
                     </td>
                 </tr>

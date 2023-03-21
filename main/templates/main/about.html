@@ -1,6 +1,19 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %} Sushi by RC | About Us {% endblock %}
+{% block icons %}
+    <li class="nav-item ms-auto">
+        <a class="nav-link active navbar-icons" aria-current="page" href="{% url 'welcome' %}">
+            <i class="fa-solid fa-user"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'cart' %}">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+    </li>
+
+{% endblock %}
 {% block body %}
 
 <div class="main-container">
