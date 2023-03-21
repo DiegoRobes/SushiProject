@@ -40,13 +40,14 @@
 
 <!-- SUBSCRIPTION FORM -->
 <div class="main-container">
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="add-button">Register</button>
-    </form>
 
     <div class="register-form-container">
         <div class="register-form-pt1">
+            <form method="post" id="shit" action="{% url 'sign_up' %}">
+                {% csrf_token %}
+                {{ basic_form.as_p }}
+                <button type="submit">submit</button>
+            </form>
             <h4>
                 Basics
             </h4>
@@ -54,25 +55,25 @@
             First Name
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="text" name="first_name">
             <br>
             <label>
             Last Name
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="text" name="l_name">
             <br>
             <label>
                 Phone
             </label>
                 <br>
-            <input type="text">
+            <input form="user_form" type="text" name="phone">
             <br>
             <label>
                 Email
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="email" name="email">
         </div>
         <div class="register-form-pt2">
             <h4>
@@ -82,19 +83,19 @@
             Street 1
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="text" name="street_1">
             <br>
             <label>
                 Street 2
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="text" name="street_2">
             <br>
             <label>
                 ZIP
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="text" name="zip">
             <br>
         </div>
         <div class="register-form-pt3">
@@ -105,13 +106,13 @@
                 Create a secure password
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="password">
             <br>
             <label>
                 Repeat Password
             </label>
             <br>
-            <input type="text">
+            <input form="user_form" type="password">
             <br>
             <div class="register-form-submit-button">
                 <label>
@@ -120,12 +121,13 @@
                     News Teller
                 </label>
                 <br>
-                <input type="checkbox">
+                <input form="user_form" type="checkbox">
                 <br>
-                <button class="add-button"> Sign Up </button>
+                <button form="user_form" type="submit" class="add-button"> Sign Up </button>
             </div>
         </div>
     </div>
+
 
 </div>
 {% endblock %}

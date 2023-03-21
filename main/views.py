@@ -1,10 +1,10 @@
+import json
+from . import forms as f
+from . import models as m
+from django.urls import reverse
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, JsonResponse
-from django.urls import reverse
-from . import models as m
-from . import forms as f
-from django.contrib.auth.models import User
-import json
 
 
 # Create your views here.
@@ -42,7 +42,7 @@ def home(request):
         context['items'] = items
         # finally we gather the whole order, in order to use the get methods for total prices and quantities
         context['order'] = order
-
+    print(request.user.customer.f_name)
     return render(request, "main/index.html", context=context)
 
 
@@ -52,7 +52,18 @@ def welcome(request):
 
 
 def sign_up(request):
-    context = {}
+    basics_form = f.UserForm()
+    context = {'basic_form': basics_form}
+    if request.POST:
+        basics_form = f.UserForm(request.POST)
+        if basics_form.is_valid():
+            new_user = User.objects.create_user(username=basics_form.cleaned_data['first_name'] +
+                                                         basics_form.cleaned_data['last_name'],
+                                                first_name=basics_form.cleaned_data['first_name'],
+                                                last_name=basics_form.cleaned_data['last_name'],
+                                                email=basics_form.cleaned_data['email'],
+                                                password=basics_form.cleaned_data['password'])
+            new_user.save()
     return render(request, "main/sign_up.html", context=context)
 
 
@@ -138,11 +149,7 @@ def update_item(request):
         orderItem.quantity -= 1
     orderItem.save()
 
-    if action == 'delete':
-        orderItem.delete()
-
-    # finally, if the orderItem quant reaches 0, we simply delete the object. the item is no longer in the cart
-    if orderItem.quantity <= 0:
+    if action == 'delete' or orderItem.quantity <= 0:
         orderItem.delete()
 
     return JsonResponse('item added to the cart', safe=False)

@@ -6,8 +6,9 @@ from django.utils.text import slugify
 # user is OneToOne bc one customer can only have one username
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    f_name = models.CharField(max_length=200, null=True)
+    """f_name = models.CharField(max_length=200, null=True)
     l_name = models.CharField(max_length=200, null=True)
+    phone = models.CharField(max_length=200, null=True)"""
     email = models.EmailField(max_length=200)
 
     def __str__(self):
@@ -50,7 +51,7 @@ class Product(models.Model):
 # still in progress. we don't commit the object to the db until this bool is True
 # YOUR ORDER IS YOUR CART
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
+    customer = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     complete = models.BooleanField(default=False, null=True, blank=True)
     order_id = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
@@ -101,7 +102,7 @@ class OrderItem(models.Model):
 # the shipping model has a field mapped to the customer, to know who this address object belongs to, and to an order,
 # to link it to a particular cart and all of its contents
 class ShippingAddress(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
+    customer = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     street_1 = models.CharField(max_length=100, null=False, unique=False)
     street_2 = models.CharField(max_length=100, null=False, unique=False)

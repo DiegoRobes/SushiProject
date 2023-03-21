@@ -35,7 +35,7 @@ function updateOrder(productId, to_do){
     })
     .then((data) =>{
         console.log('data:', data)
-        //location.reload()
+        location.reload()
     })
 }
 
