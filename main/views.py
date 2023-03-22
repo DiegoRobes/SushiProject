@@ -2,12 +2,11 @@ import json
 from . import forms as f
 from . import models as m
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, JsonResponse
 
 
-# Create your views here.
 def home(request):
     featured = m.Product.objects.filter(featured=True)[0]
 
@@ -51,34 +50,29 @@ def welcome(request):
     return render(request, "main/welcome.html", context=context)
 
 
+# get the register form and send it into the template via context.
+# if the method is request and the validation is complete, we can create and save a User into the db just as
+# easy as that
 def sign_up(request):
-    basics_form = f.UserForm()
+    register_form = f.RegisterForm()
     shipping_form = f.ShippingForm()
-    context = {'basics_form': basics_form, 'shipping_form': shipping_form}
+    context = {'register_form': register_form, 'shipping_form': shipping_form}
     if request.POST:
-        basics_form = f.UserForm(request.POST)
+        register_form = f.RegisterForm(request.POST)
         shipping_form = f.ShippingForm(request.POST)
-        if basics_form.is_valid():
-            new_user = User.objects.create_user(username=basics_form.cleaned_data['first_name'] +
-                                                basics_form.cleaned_data['last_name'],
-                                                first_name=basics_form.cleaned_data['first_name'],
-                                                last_name=basics_form.cleaned_data['last_name'],
-                                                email=basics_form.cleaned_data['email'],
-                                                password=basics_form.cleaned_data['password'])
-            new_user.save()
-            new_address = m.ShippingAddress(
-                customer=new_user,
-                street_1=shipping_form['street_1'].data,
-                street_2=shipping_form['street_2'].data,
-                zip=shipping_form['zip'].data
-            )
-            new_address.save()
-    return render(request, "main/sign_up.html", context=context)
+        if register_form.is_valid():
+            user = register_form.save()
+            login(request, user)
+        return redirect(reverse('dashboard'))
+    return render(request, "registration/sign_up.html", context=context)
 
 
-def login(request):
+def login_user(request):
     context = {}
-    return render(request, "main/login.html", context=context)
+    if request.POST:
+        pass
+
+    return render(request, "registration/login.html", context=context)
 
 
 def dashboard(request):

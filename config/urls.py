@@ -18,7 +18,13 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
+# first we register all the apps we create for the project, then include the django.contrib.auth.urls,
+# these are a bunch of prebuilt functions that can automatically manage stuff like login, logout,
+# password changes and such. the only thing you need to do to make them work, is to write the forms for them
+# to be used. and place your templates for these routes in a folder called registration.
+# check forms.py and registration directory in the main app
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
+    path('', include('django.contrib.auth.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
