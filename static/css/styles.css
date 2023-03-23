@@ -49,6 +49,14 @@ display: flex;
     color: #333
 }
 
+/******* MESSAGES CLASSES  ******/
+.warning{
+    color: #DA1010;
+}
+
+.success{
+    color: #0EAF4B;
+}
 /******* MAIN COVER PICTURE  ******/
 .main-cover {
     width: 100%;
@@ -287,7 +295,11 @@ button.user:hover{
     text-align: right;
 }
 
-/******* CLIENT ACCOUNT ******/
+/******* DASHBOARD ******/
+.buckaroo{
+    text-align: center;
+}
+
 .log-out-button-container{
     height: 50px;
 }

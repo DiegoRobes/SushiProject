@@ -43,17 +43,24 @@
         {% csrf_token %}
         <div class="user-registration-form">
             <div>
+                {% if messages %}
+                    {% for message in messages %}
+                    <h4 class="{{message.tags}}">{{ message }}</h4>
+                    {% endfor %}
+                {% endif %}
                 <h4>
                     Basics
                 </h4>
                 {{ register_form|crispy }}
-            </div>
-            <div class="shipping-address-container">
+                <br>
+                <hr>
+                <br>
                 <h4>
                     Shipping Address
                 </h4>
                 {{ shipping_form|crispy }}
                 <button type="submit" class="add-button">Submit</button>
+                <br>
             </div>
         </div>
     </form>

@@ -30,7 +30,7 @@ class UserForm(forms.Form):
 class ShippingForm(forms.ModelForm):
     class Meta:
         model = m.ShippingAddress
-        fields = {'street_1', 'street_2', 'zip'}
+        fields = ['street_1', 'street_2', 'zip']
         labels = {
             'street_1': _('Street 1'),
             'street_2': _('Street 2'),
