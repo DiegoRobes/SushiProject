@@ -5,9 +5,10 @@ from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect, JsonResponse
-from django.contrib.auth import login, logout, authenticate
 from django.core.exceptions import MultipleObjectsReturned
+from django.contrib.auth import login, logout, authenticate
 
 
 def home(request):
@@ -52,7 +53,8 @@ def welcome(request):
     context = {}
     if request.user.is_authenticated:
         return redirect(reverse('dashboard'))
-    return render(request, "main/welcome.html", context=context)
+    else:
+        return render(request, "main/welcome.html", context=context)
 
 
 # get the register form and send it into the template via context.
@@ -88,11 +90,19 @@ def sign_up(request):
 
 
 def login_user(request):
-    context = {}
     if request.user.is_authenticated:
         return redirect(reverse('dashboard'))
-    print('user not logged')
-    return render(request, "registration/login.html", context=context)
+    else:
+        if request.POST:
+            form = AuthenticationForm(request, data=request.POST)
+            if form.is_valid():
+                user = form.get_user()
+                login(request, user)
+                return redirect(reverse('dashboard'))
+        else:
+            form = AuthenticationForm(request)
+            context = {'form': form}
+            return render(request, "registration/login.html", context=context)
 
 
 def logout_user(request):
@@ -107,7 +117,6 @@ def dashboard(request):
         if request.POST:
             shipping_form = f.ShippingForm(request.POST)
             if shipping_form.is_valid():
-                print('valid form')
                 new_address = m.ShippingAddress(
                     customer=request.user,
                     street_1=shipping_form['street_1'].data,
@@ -118,24 +127,28 @@ def dashboard(request):
             return redirect(reverse('dashboard'))
 
         else:
+            context = {}
             try:
                 address = m.ShippingAddress.objects.filter(customer=request.user.id)
 
                 if len(address) > 1:
-                    context = {'address': address, 'user': request.user, 'single_address': False}
-                else:
-                    data = {'street_1': address.street_1,
-                            'street_2': address.street_2,
-                            'zip': address.zip}
+                    context = {'user': request.user, 'multiple_address': address}
+
+                if len(address) == 1:
+                    data = {'street_1': address[0].street_1,
+                            'street_2': address[0].street_2,
+                            'zip': address[0].zip}
                     shipping_form = f.ShippingForm(data)
                     context = {'shipping_form': shipping_form, 'user': request.user, 'single_address': True}
 
-                return render(request, "main/dashboard.html", context=context)
-            except AttributeError:
+                if len(address) == 0:
+                    context = {'no_address': True}
+            except IndexError as e:
+                print(e)
                 context = {'no_address': True}
-                return render(request, "main/dashboard.html", context=context)
-
-    return redirect(reverse('home'))
+            return render(request, "main/dashboard.html", context=context)
+    else:
+        return redirect(reverse('home'))
 
 
 def details(request, slug):

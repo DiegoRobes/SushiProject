@@ -57,62 +57,87 @@
                     Shipping Address
                 </h4>
                 <p style="color: grey;">
-                You can update your billing details right here if you need to.
-                <br>
-                Otherwise, just ignore this form.
+                    You can update your shipping details right here if you need to.
+                    <br>
+                    Otherwise, just ignore this form.
                 </p>
                 <form method="post" action="{% url 'dashboard' %}">
                     {% csrf_token %}
                     {{ shipping_form|crispy }}
                     <button type="submit" class="add-button"> Update Info </button>
                 </form>
+            </div>
+            <div class="register-form-pt2">
+                <h4>
+                    Orders
+                </h4>
+                <p style="color: grey;">
+                    Check on your order history here.
+                </p>
                 <div class="update-info-button-container">
+                    <button class="add-button"> Go </button>
                 </div>
             </div>
         {% endif %}
 
-        {% if not single_address %}
-            {% if no_address %}
-                <h4 class="buckaroo">
-                    Wait a second there, buckaroo.
-                    <br>
-                    You don't have any address registered yet!
+        {% if multiple_address %}
+            <div class="register-form-pt1">
+                <h4>
+                    All Your addresses
                 </h4>
-            {% else %}
+                <p style="color: grey;">
+                    Choose what to do with them if needed
+                </p>
+                {% for i in multiple_address %}
+                <div class="all-addresses-container">
+                    <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
+                    <div class="address-buttons-container">
+                        <div class="address-button">
+                            <button class="danger-smol"> Delete </button>
+                        </div>
+                        <div class="address-button">
+                            <button class="save"> Edit </button>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                {% endfor %}
+                 <div class="all-addresses-container">
+                    <h4>Add new Address</h4>
+                    <button class="save"> +Add </button>
+                </div>
 
-                <div class="register-form-pt1">
+                <hr>
+                <div class="register-form-pt2">
                     <h4>
-                        All Your addresses
+                        Orders
                     </h4>
                     <p style="color: grey;">
-                    Choose what to do with them if needed
+                        Check on your order history here.
                     </p>
-                    {% for i in address %}
-                       <ul>
-                           <li>
-                               <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
-                               <button class="danger"> Delete </button>
-                               <button class="danger"> Edit </button>
-                           </li>
-                       </ul>
-                    {% endfor %}
+                    <div class="update-info-button-container">
+                        <button class="add-button"> Go </button>
+                    </div>
                 </div>
-
-            {% endif %}
+            </div>
         {% endif %}
 
-        {% if not no_address%}
-        <div class="register-form-pt2">
-            <h4>
-                Orders
-            </h4>
-            <p style="color: grey;">
-                Check on your order history here.
-            </p>
-            <div class="update-info-button-container">
-                <button class="add-button"> Go </button>
+
+        {% if no_address %}
+            <div class="register-form-pt2">
+                <h3>
+                    You have no addresses yet!
+                </h3>
+                <h4>
+                    Orders
+                </h4>
+                <p style="color: grey;">
+                    Check on your order history here.
+                </p>
+                <div class="update-info-button-container">
+                    <button class="add-button"> Go </button>
+                </div>
             </div>
-        </div>
         {% endif %}
 
     </div>

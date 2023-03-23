@@ -322,6 +322,17 @@ button.logout-button:hover{
     margin-top: 25px;
 }
 
+.all-addresses-container{
+    text-align: center;
+}
+.address-buttons-container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.address-button{
+    width: 50%;
+}
 /******* EMPTY CART ******/
 .presentation-text-empty-cart{
     padding-left: 30px;
@@ -436,14 +447,39 @@ button.danger:hover{
       transition: 0.7s;
 }
 
-.save_changes{
-    margin: 20px 0px 20px 0px;
+
+.danger-smol{
+    margin: 0px 0px 20px 0px;
     width: 95%;
     border: solid #333;
     border-width: thin;
 }
 
-button.save_changes{
+button.danger-smol{
+    cursor: pointer;
+    position: relative;
+    background: white;
+    border-radius: 5px;
+    border-color: #333;
+    padding: 0 5px;
+}
+
+button.danger-smol:hover{
+      background-color:#CB0606;
+      color: white;
+      border-color: white;
+      transition: 0.7s;
+}
+
+
+.save{
+    margin: 0px 0px 20px 0px;
+    width: 95%;
+    border: solid #333;
+    border-width: thin;
+}
+
+button.save{
     cursor: pointer;
     position: relative;
     background: white;
@@ -453,7 +489,7 @@ button.save_changes{
     padding-bottom: 2px;
 }
 
-button.save_changes:hover,
+button.save:hover,
 button.edit-cart:hover{
       background-color: #17A035;
       color: white;
