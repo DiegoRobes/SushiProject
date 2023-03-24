@@ -3,12 +3,10 @@ from . import forms as f
 from . import models as m
 from django.urls import reverse
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseRedirect, JsonResponse
-from django.core.exceptions import MultipleObjectsReturned
-from django.contrib.auth import login, logout, authenticate
 
 
 def home(request):
@@ -112,6 +110,7 @@ def logout_user(request):
 
 
 def dashboard(request):
+    context = {}
     if request.user.is_authenticated:
         if request.POST:
             shipping_form = f.ShippingForm(request.POST)
@@ -126,37 +125,51 @@ def dashboard(request):
             return redirect(reverse('dashboard'))
 
         else:
-            context = {}
             try:
                 address = m.ShippingAddress.objects.filter(customer=request.user.id)
-
                 if len(address) > 1:
-                    context = {'user': request.user, 'multiple_address': address}
-
+                    context['multiple_address'] = address
+                    return render(request, "main/dashboard.html", context=context)
                 if len(address) == 1:
                     data = {'street_1': address[0].street_1,
                             'street_2': address[0].street_2,
                             'zip': address[0].zip}
                     shipping_form = f.ShippingForm(data)
-                    context = {'shipping_form': shipping_form, 'user': request.user, 'single_address': True}
-
-                if len(address) == 0:
-                    context = {'no_address': True}
-            except IndexError as e:
+                    context['shipping_form'] = shipping_form
+                    context['single_address'] = address[0]
+                    return render(request, "main/dashboard.html", context=context)
+                else:
+                    shipping_form = f.ShippingForm()
+                    context['no_address'] = True
+                    context['shipping_form'] = shipping_form
+                    return render(request, "main/dashboard.html", context=context)
+            except Exception as e:
                 print(e)
-                context = {'no_address': True}
+
             return render(request, "main/dashboard.html", context=context)
     else:
         return redirect(reverse('home'))
 
 
-def details(request, slug):
+def delete_address(request):
+    if request.user.is_authenticated:
+        data = json.loads(request.body)
+        address_id = data['address_id']
+        to_delete = m.ShippingAddress.objects.get(id=address_id)
+        to_delete.delete()
+        return JsonResponse('item added to the cart', safe=False)
+
+    else:
+        return redirect(reverse('home'))
+
+
+def details(request, id):
     context = {}
     try:
-        selected = m.Product.objects.get(slug=slug)
+        selected = m.Product.objects.get(id=id)
         context = {'selected': selected}
     except Exception as e:
-        print(e)
+        print('exception on details page', e)
     return render(request, "main/details.html", context=context)
 
 
@@ -231,7 +244,8 @@ def update_item(request):
     data = json.loads(request.body)
     product_id = data['product_id']
     action = data['action']
-
+    print('p_id', product_id)
+    print('action', action)
     # once the request dict is here, we begin to create the order proper. for that, first we get the user. check that
     # var in base template. then get the id from the dictionary to get the right object from the db
     # after that we create a variable that contains an order and assign the customer to that order

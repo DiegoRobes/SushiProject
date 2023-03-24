@@ -47,19 +47,19 @@
                    Please choose one of your addresses
                 </p>
                 <hr>
-                    {% for i in multiple_address %}
-                        <div class="all-addresses-container">
-                            <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
-                            <div >
-                                <button class="save"> Use this Address</button>
-                            </div>
-                        </div>
-                        <hr>
-                    {% endfor %}
-                    <div class="all-addresses-container">
-                        <h4>Use new Address</h4>
-                        <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
+                {% for i in multiple_address %}
+                <div class="all-addresses-container">
+                    <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
+                    <div >
+                        <button class="save"> Use this Address</button>
                     </div>
+                </div>
+                <hr>
+                {% endfor %}
+                <div class="all-addresses-container">
+                    <h4>Use new Address</h4>
+                    <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
+                </div>
             </div>
         </div>
     </div>

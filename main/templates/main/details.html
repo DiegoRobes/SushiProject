@@ -39,7 +39,8 @@
                   ${{selected.price}}
                 </h1>
 
-                <button data-product={{selected.id}} data-action="add" class="add-button update-cart">
+                <button class="add-button update-cart"
+                        onclick="addToCart({{selected.id}}, 'add')">
                     Add to Cart <i class="fa-solid fa-plus"></i>
                 </button>
 

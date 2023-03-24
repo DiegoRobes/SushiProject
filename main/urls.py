@@ -6,7 +6,7 @@ from . import views as v
 
 urlpatterns = [
     path('', v.home, name="home"),
-    path('details/<slug:slug>', v.details, name="details"),
+    path('details/<slug:id>', v.details, name="details"),
     path('about', v.about, name="about"),
     path('welcome', v.welcome, name="welcome"),
     path('sign_up', v.sign_up, name="sign_up"),
@@ -15,5 +15,6 @@ urlpatterns = [
     path('cart', v.cart, name="cart"),
     path('checkout', v.checkout, name="checkout"),
     path('dashboard', v.dashboard, name="dashboard"),
+    path('delete_address', v.delete_address, name="delete_address"),
     path('update_item', v.update_item, name="update_item"),
 ]
