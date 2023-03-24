@@ -107,9 +107,8 @@ def login_user(request):
 
 def logout_user(request):
     if request.user.is_authenticated:
-        print('about to logout user')
-        # request.user.logout
-        return redirect(reverse('about'))
+        logout(request)
+        return redirect(reverse('login'))
 
 
 def dashboard(request):
@@ -185,6 +184,18 @@ def cart(request):
 def checkout(request):
     context = {}
     if request.user.is_authenticated:
+        if request.POST:
+            shipping_form = f.ShippingForm(request.POST)
+            if shipping_form.is_valid():
+                new_address = m.ShippingAddress(
+                    customer=request.user,
+                    street_1=shipping_form['street_1'].data,
+                    street_2=shipping_form['street_2'].data,
+                    zip=shipping_form['zip'].data
+                )
+                new_address.save()
+                return redirect(reverse('checkout'))
+
         customer = request.user
         # here we create or get the order, and find one that matches the customer in turn and is also open
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
@@ -193,6 +204,23 @@ def checkout(request):
         context['items'] = items
         # finally we gather the whole order, in order to use the get methods for total prices and quantities
         context['order'] = order
+        context['user'] = request.user
+        try:
+            address = m.ShippingAddress.objects.filter(customer=request.user.id)
+            if len(address) > 1:
+                context['multiple_address'] = address
+                return render(request, "main/checkout.html", context=context)
+            if len(address) == 1:
+                context['single_address'] = address[0]
+                return render(request, "main/checkout.html", context=context)
+            else:
+                shipping_form = f.ShippingForm()
+                context['no_address'] = True
+                context['shipping_form'] = shipping_form
+                return render(request, "main/checkout.html", context=context)
+        except Exception as e:
+            print(e)
+
     return render(request, "main/checkout.html", context=context)
 
 
@@ -203,6 +231,7 @@ def update_item(request):
     data = json.loads(request.body)
     product_id = data['product_id']
     action = data['action']
+
     # once the request dict is here, we begin to create the order proper. for that, first we get the user. check that
     # var in base template. then get the id from the dictionary to get the right object from the db
     # after that we create a variable that contains an order and assign the customer to that order

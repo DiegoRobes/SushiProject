@@ -568,5 +568,8 @@ button.edit-cart:hover{
 
 .price-row-division{
    text-align: right;
+}
 
+.submit-button-container{
+    text-align: center;
 }
