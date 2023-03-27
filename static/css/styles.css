@@ -45,6 +45,16 @@ display: flex;
 }
 
 /******* GENERAL OPTIONS  ******/
+.main-container{
+    margin: 0% 10% 0% 10%;
+}
+
+.main-container-center{
+    margin: 0% 10% 0% 10%;
+    display: flex;
+    justify-content: center;
+}
+
 .display-fonts{
     color: #333
 }
@@ -63,10 +73,6 @@ display: flex;
 }
 
 /******* FEATURED SECTION ******/
-.main-container{
-    margin: 0% 10% 0% 10%;
-}
-
 .featured-container{
     margin-top: 60px;
 }
@@ -322,7 +328,23 @@ button.logout-button:hover{
     margin-top: 25px;
 }
 
+.no-address-container{
+    text-align: center;
+    margin-top: 40px;
+}
+
+.check-orders-container{
+    text-align: center;
+    margin-top: 40px;
+}
+
 .all-addresses-container{
+    text-align: center;
+}
+
+.multiple-address-container{
+    margin-top: 40px;
+    width: 60%;
     text-align: center;
 }
 .address-buttons-container{
@@ -337,6 +359,36 @@ button.logout-button:hover{
 .dashboard-address-buttons{
     display: flex;
     justify-content: space-around;
+}
+
+.add-address-pop-up{
+    width: 400px;
+    background: white;
+    box-shadow: 5px 5px 10px 2px rgba(0,0,0,.3);
+    padding: 20px;
+    border-radius: 8px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.1);
+    visibility: hidden;
+    transition: transform 0.4s, top 0.4s;
+}
+
+.popup-inner-div{
+    display: flex;
+    justify-content: space-between;
+}
+
+.close{
+    background: white;
+    border: none;
+}
+
+.open-popup{
+    visibility: visible;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .checkout-billing-info-container{

@@ -128,6 +128,8 @@ def dashboard(request):
             try:
                 address = m.ShippingAddress.objects.filter(customer=request.user.id)
                 if len(address) > 1:
+                    shipping_form = f.ShippingForm()
+                    context['shipping_form'] = shipping_form
                     context['multiple_address'] = address
                     return render(request, "main/dashboard.html", context=context)
                 if len(address) == 1:

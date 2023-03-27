@@ -54,7 +54,8 @@
                     Shipping Address
                 </h4>
                 <p style="color: grey;">
-                    You can update your shipping details right here if you need to.
+                    Edit the fields bellow if you need to update your
+                    shipping details.
                     <br>
                     Otherwise, just ignore this form.
                 </p>
@@ -67,7 +68,7 @@
                     <button class="danger" onclick="deleteAddress({{ single_address.id }})"> Delete this Address </button>
                 </div>
                 <div class="add-new-address-container">
-                    <button class="save"> <i class="fa-solid fa-plus"></i> Add a new Address </button>
+                    <button class="save" onclick="openPopUp()"> <i class="fa-solid fa-plus"></i> Add New Address </button>
                 </div>
             </div>
         </div>
@@ -76,8 +77,8 @@
 
 
 {% if multiple_address %}
-<div class="main-container">
-    <div class="register-form-pt1">
+<div class="main-container-center">
+    <div class="multiple-address-container">
             <h4>
                 All Your addresses
             </h4>
@@ -92,7 +93,7 @@
                         <button class="danger-smol" onclick="deleteAddress({{ i.id }})"> Delete </button>
                     </div>
                     <div class="address-button">
-                        <button class="save"> Edit </button>
+                        <button class="save" onclick="openPopUp()"> Edit </button>
                     </div>
                 </div>
             </div>
@@ -100,7 +101,7 @@
             {% endfor %}
             <div class="all-addresses-container">
                 <h4>Add new Address</h4>
-                <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
+                <button class="save" onclick="openPopUp()"> <i class="fa-solid fa-plus"></i> Add </button>
             </div>
             <hr>
     </div>
@@ -109,43 +110,65 @@
 
 
 {% if no_address %}
-<div class="main-container">
-    <div class="register-form-pt2">
-                <h3>
-                    You have no addresses yet!
-                </h3>
-                <hr>
-                <h4>
-                    Orders
-                </h4>
-                <p style="color: grey;">
-                    Check on your order history here.
-                </p>
-                <div class="update-info-button-container">
-                    <button class="add-button"> Go </button>
-                </div>
-            </div>
+    <div class="main-container">
+    <div class="no-address-container">
+        <h3>
+            You have no addresses yet!
+        </h3>
+        <p style="color: gery;">
+            Please help us complete your orders by adding one
+        </p>
+        <button class="save" onclick="openPopUp()"> <i class="fa-solid fa-plus"></i> Add </button>
+
+    </div>
 </div>
 {% endif %}
 
 
 <!-- CHECK ORDERS -->
 <div class="main-container">
-    <hr>
-    <div class="checkout-billing-info-container">
-        <div class="dashboard-orders-container">
-                <h4>
-                    Orders
-                </h4>
-                <p style="color: grey;">
-                    Check on your order history here.
-                </p>
-                <div class="update-info-button-container">
-                    <button class="add-button"> Go </button>
-                </div>
-            </div>
+
+    <div class="check-orders-container">
+        <h4>
+            Orders
+        </h4>
+        <p style="color: grey;">
+            Check on your order history here.
+        </p>
+        <button class="add-button"> Go </button>
     </div>
 </div>
 
 
+<div  class="add-address-pop-up" id="add-address">
+    <div class="popup-inner-div">
+        <h3>
+            Add new Address
+        </h3>
+        <button type="button" class="close" onclick="closePopUp()"> <i class="fa-solid fa-circle-xmark"></i></button>
+    </div>
+    <form method="post" action="{% url 'dashboard'%}">
+        {% csrf_token %}
+        {{ shipping_form|crispy}}
+        <button type="submit" class="save" onclick="closePopUp()">
+            <i class="fa-solid fa-plus"></i> Save
+        </button>
+    </form>
+</div>
+
+
+<script>
+
+    let popup = document.getElementById("add-address")
+    function openPopUp(){
+        open-popup.classList.add("open-popup");
+    }
+
+    function closePopUp(){
+        open-popup.classList.remove("open-popup");
+    }
+</script>
+
 {% endblock %}
+
+
