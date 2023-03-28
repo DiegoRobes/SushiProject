@@ -1,4 +1,5 @@
 import json
+import datetime
 from . import forms as f
 from . import models as m
 from django.urls import reverse
@@ -165,14 +166,33 @@ def delete_address(request):
         return redirect(reverse('home'))
 
 
-def details(request, id):
+def details(request, slug):
     context = {}
+    slug = slug
     try:
-        selected = m.Product.objects.get(id=id)
+        selected = m.Product.objects.get(slug=slug)
+        print(slug)
         context = {'selected': selected}
     except Exception as e:
         print('exception on details page', e)
     return render(request, "main/details.html", context=context)
+
+
+def added_to_cart(request):
+    if request.user.is_authenticated:
+        if request.POST:
+            quantity = request.POST['quantity']
+            product_id = request.POST['product_id']
+            customer = request.user
+            product = m.Product.objects.get(id=product_id)
+            order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+            orderItem, created = m.OrderItem.objects.get_or_create(order=order, product=product)
+            orderItem.quantity += int(quantity)
+            orderItem.save()
+            return redirect(reverse('cart'))
+    else:
+        messages.warning(request, 'Please Sign Up or Login into your account to add products to your cart.')
+        return redirect(reverse('cart'))
 
 
 def about(request):
@@ -217,24 +237,32 @@ def checkout(request):
         # then get the items of this particular order and send them to the context dict
         items = order.orderitem_set.all()
         context['items'] = items
-        # finally we gather the whole order, in order to use the get methods for total prices and quantities
-        context['order'] = order
-        context['user'] = request.user
-        try:
-            address = m.ShippingAddress.objects.filter(customer=request.user.id)
-            if len(address) > 1:
-                context['multiple_address'] = address
-                return render(request, "main/checkout.html", context=context)
-            if len(address) == 1:
-                context['single_address'] = address[0]
-                return render(request, "main/checkout.html", context=context)
-            else:
-                shipping_form = f.ShippingForm()
-                context['no_address'] = True
-                context['shipping_form'] = shipping_form
-                return render(request, "main/checkout.html", context=context)
-        except Exception as e:
-            print(e)
+        if not items:
+            return render(request, "main/checkout.html", context=context)
+        else:
+            # finally we gather the whole order, in order to use the get methods for total prices and quantities
+            context['order'] = order
+            context['user'] = request.user
+            try:
+                address = m.ShippingAddress.objects.filter(customer=request.user.id)
+                if len(address) > 1:
+                    context['multiple_address'] = address
+                    return render(request, "main/checkout.html", context=context)
+                if len(address) == 1:
+                    data = {'street_1': address[0].street_1,
+                            'street_2': address[0].street_2,
+                            'zip': address[0].zip}
+                    shipping_form = f.ShippingForm(data)
+                    context['shipping_form'] = shipping_form
+                    context['single_address'] = address[0]
+                    return render(request, "main/checkout.html", context=context)
+                else:
+                    shipping_form = f.ShippingForm()
+                    context['no_address'] = True
+                    context['shipping_form'] = shipping_form
+                    return render(request, "main/checkout.html", context=context)
+            except Exception as e:
+                print(e)
 
     return render(request, "main/checkout.html", context=context)
 
@@ -271,3 +299,21 @@ def update_item(request):
         orderItem.delete()
 
     return JsonResponse('item added to the cart', safe=False)
+
+
+def process_order(request):
+    data = json.loads(request.body)
+    transaction_id = datetime.datetime.now().timestamp()
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        total_to_pay = float(data['total'])
+        order.order_id = transaction_id
+
+        if total_to_pay == order.get_total_price:
+            order.complete = True
+            order.save()
+
+    else:
+        return redirect(reverse('home'))
+    return JsonResponse('Order Completed', safe=False)

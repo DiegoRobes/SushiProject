@@ -609,6 +609,11 @@ button.edit-cart:hover{
     max-width: 500px;
 }
 
+.details-num-selector{
+    width: 45px;
+    margin-bottom: 20px;
+}
+
 /******* CHECKOUT ******/
 .checkout-billing-info-container{
     display: flex;
@@ -618,6 +623,12 @@ button.edit-cart:hover{
 
 .checkout-summary-container{
     width: 400px;
+}
+
+.no-order-container{
+      display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }
 
 .checkout-button-container{

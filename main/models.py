@@ -66,7 +66,7 @@ class Order(models.Model):
         items = self.orderitem_set.all()
         # then the total price of each individual item by looping in the items var just created,
         # and accessing each one's total cost (check that method in the orderitem model)
-        total = sum([item.get_total for item in items])
+        total = sum([float(item.get_total) for item in items])
         return "{:.2f}".format(total)
 
     # this method returns the total n° of products in the cart
@@ -96,7 +96,7 @@ class OrderItem(models.Model):
     @property
     def get_total(self):
         total = self.product.price * self.quantity
-        return total
+        return "{:.2f}".format(total)
 
 
 # the shipping model has a field mapped to the customer, to know who this address object belongs to, and to an order,

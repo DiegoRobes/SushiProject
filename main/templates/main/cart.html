@@ -26,9 +26,14 @@
         <img class="register-img" src="{% static 'images/cover.jpeg' %}">
         <div class="presentation-text-empty-cart">
             <div class="empty-cart-container">
-        <h1>
-            You cart is empty!
-        </h1>
+                <h1>
+                    You cart is empty!
+                </h1>
+                {% if messages %}
+                    {% for message in messages %}
+                    <h4 class="{{message.tags}}">{{ message }}</h4>
+                    {% endfor %}
+                {% endif %}
         <a href="{% url 'home' %}" >
             <button type="button" class="logout-button back-to-store-button" >Back to store</button>
         </a>

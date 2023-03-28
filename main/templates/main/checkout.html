@@ -77,13 +77,10 @@
                    Your default address is:
                 </p>
                 <hr>
-                <div class="all-addresses-container">
-
-                    <h4>{{single_address.street_1}} - {{single_address.street_2}} - {{single_address.zip}}</h4>
-                    <div>
-                        <button class="save"> Select It</button>
-                    </div>
-
+                <div class="">
+                    <form id="shipping_form">
+                        {{ shipping_form|crispy }}
+                    </form>
                 </div>
                 <hr>
                 <div class="all-addresses-container">
@@ -119,9 +116,9 @@
     </div>
 {% endif %}
 
-<hr>
 
-<div class="main-container">
+<div class="main-container ">
+    <hr>
     <div class="checkout-billing-info-container">
         <!-- SUMMARY TABLE -->
         {% if not items %}
@@ -171,12 +168,10 @@
                     </td>
                 </tr>
             </table>
-
-
             <!-- CHECKOUT BUTTON -->
             <div class="checkout-button-container">
                 <a href="#">
-                    <button class="add-button" onclick="shippingData()">
+                    <button class="add-button" type="submit" form="shipping_form" onclick="shippingData()">
                         Pay Now
                     </button>
                 </a>
@@ -187,5 +182,43 @@
     </div>
 </div>
 
+<script>
+
+    function shippingData(){
+        var total_to_pay = '{{order.get_total_price|floatformat:2}}'
+        var userData = {
+            'name':'{{request.user.first_name}}',
+            'email':'{{request.user.email}}',
+        }
+        var shipping = {
+            'street_1':'{{shipping_form.street_1.value}}',
+            'street_2':'{{shipping_form.street_2.value}}',
+            'zip':'{{shipping_form.zip.value}}',
+        }
+        console.log(total_to_pay)
+        console.log(shipping)
+
+        var url = 'process_order'
+        fetch(url, {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({'user': userData, 'total': total_to_pay, 'shipping': shipping})
+        })
+        .then((response) =>{
+            return response.json()
+        })
+        .then((data) =>{
+            console.log('data:', data)
+            alert('transaction completed')
+            window.location.href = '{% url 'home' %}'
+        })
+
+
+    }
+
+</script>
 
 {% endblock %}

@@ -95,7 +95,7 @@
                 <tr>
                     <td class="menu-item-img-td" colspan="2">
                         <div class="menu-item-img-container">
-                            <a href="{% url 'details' i.id %}">
+                            <a href="{% url 'details' i.slug %}">
                                 <img class="menu-item-img" src="{{ i.img.url }}">
                             </a>
                         </div>
@@ -137,7 +137,7 @@
                 <tr>
                     <td class="menu-item-img-td" colspan="2">
                         <div class="menu-item-img-container">
-                            <a href="{% url 'details' i.id %}">
+                            <a href="{% url 'details' i.slug %}">
                                 <img class="menu-item-img" src="{{ i.img.url }}">
                             </a>
                         </div>

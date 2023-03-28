@@ -38,11 +38,15 @@
                 <h1>
                   ${{selected.price}}
                 </h1>
+                <form method="post" action="{% url 'added-to-cart' %}">
+                    {% csrf_token %}
+                    <div>
+                        <input name="quantity" type="number" min="1" value="1" max="100" class="details-num-selector">
+                        <input name="product_id" type="hidden" value="{{selected.id}}">
+                    </div>
+                    <button type="submit" class="add-button"> Add to cart <i class="fa-solid fa-plus"></i></button>
+                </form>
 
-                <button class="add-button update-cart"
-                        onclick="addToCart({{selected.id}}, 'add')">
-                    Add to Cart <i class="fa-solid fa-plus"></i>
-                </button>
 
             </div>
         </div>

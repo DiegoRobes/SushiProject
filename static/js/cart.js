@@ -38,7 +38,3 @@ function updateOrder(productId, to_do){
         location.reload()
     })
 }
-
-function shippingData(){
-    console.log('checkout')
-}
