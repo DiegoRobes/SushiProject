@@ -17,6 +17,13 @@
 
 {% block body %}
 
+
+{% if messages %}
+    {% for message in messages %}
+        <h4 class="{{message.tags}}">{{ message }}</h4>
+    {% endfor %}
+{% endif %}
+
 <!-- PRESENTATION -->
 <div class="main-container">
     <div class="register-presentation-img-container">
@@ -85,6 +92,8 @@
             <p style="color: grey;">
                 Choose what to do with them if needed
             </p>
+            <hr>
+
             {% for i in multiple_address %}
             <div class="all-addresses-container">
                 <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
@@ -103,7 +112,6 @@
                 <h4>Add new Address</h4>
                 <button class="save" onclick="openPopUp()"> <i class="fa-solid fa-plus"></i> Add </button>
             </div>
-            <hr>
     </div>
 </div>
 {% endif %}
@@ -127,15 +135,48 @@
 
 <!-- CHECK ORDERS -->
 <div class="main-container">
+    <hr>
 
     <div class="check-orders-container">
-        <h4>
+        <h3>
             Orders
-        </h4>
+        </h3>
         <p style="color: grey;">
-            Check on your order history here.
+            Check your order history here.
         </p>
-        <button class="add-button"> Go </button>
+        <hr>
+
+        {% if not orders %}
+            <h5>
+                You have no orders yet.
+            </h5>
+            <a href="{% url 'home' %}" >
+                <button type="button" class="logout-button back-to-store-button" >Back to store</button>
+            </a>
+        {% endif %}
+
+        {% for i in orders %}
+        <div class="orders-container">
+            <div>
+                <h5>Date</h5>
+                <p>{{ i.date }}</p>
+            </div>
+            <div>
+                <h5>Order ID</h5>
+                <p>{{ i.order_id }}</p>
+            </div>
+            <div>
+                <h5>N° Items</h5>
+                <p>{{ i.get_total_items }}</p>
+            </div>
+            <div>
+                <h5>Total Paid</h5>
+                <p>${{ i.get_total_price }}</p>
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+
     </div>
 </div>
 

@@ -35,6 +35,7 @@ function updateOrder(productId, to_do){
     })
     .then((data) =>{
         console.log('data:', data)
+        alert('Product added to your cart!')
         location.reload()
     })
 }

@@ -399,6 +399,13 @@ button.logout-button:hover{
     margin-top: 20px;
     text-align: center;
 }
+
+
+.orders-container{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
 /******* EMPTY CART ******/
 .presentation-text-empty-cart{
     padding-left: 30px;

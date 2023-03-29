@@ -113,6 +113,9 @@ def logout_user(request):
 def dashboard(request):
     context = {}
     if request.user.is_authenticated:
+        customer = request.user
+        orders = m.Order.objects.filter(customer=customer, complete=True)
+        context['orders'] = orders
         if request.POST:
             shipping_form = f.ShippingForm(request.POST)
             if shipping_form.is_valid():
@@ -267,6 +270,34 @@ def checkout(request):
     return render(request, "main/checkout.html", context=context)
 
 
+def set_address(request):
+    context = {}
+    if request.user.is_authenticated:
+        if request.POST:
+            print('the post request from the form is valid, bitch!')
+            data = {'street_1': request.POST['street_1'],
+                    'street_2': request.POST['street_2'],
+                    'zip': request.POST['zip']}
+            shipping_form = f.ShippingForm(data)
+            context['shipping_form'] = shipping_form
+            context['single_address'] = True
+
+            customer = request.user
+            # here we create or get the order, and find one that matches the customer in turn and is also open
+            order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+            # then get the items of this particular order and send them to the context dict
+            items = order.orderitem_set.all()
+            context['items'] = items
+            context['order'] = order
+            if not items:
+                return render(request, "main/checkout.html", context=context)
+            return render(request, "main/checkout.html", context=context)
+        else:
+            return redirect(reverse('home'))
+    else:
+        return redirect(reverse('home'))
+
+
 # once the request is passed using the js function on the other side, we can access the request dictionary
 # and its contents. check the (request.body), it is accessing the key of body from that dict
 # then we return a response that will be rendered by the js function, in the form of a json
@@ -307,13 +338,13 @@ def process_order(request):
     if request.user.is_authenticated:
         customer = request.user
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
-        total_to_pay = float(data['total'])
         order.order_id = transaction_id
 
-        if total_to_pay == order.get_total_price:
+        total_to_pay = float(data['total'])
+        order_total = float(order.get_total_price)
+        if total_to_pay == order_total:
             order.complete = True
             order.save()
-
+            return JsonResponse('Order Completed', safe=False)
     else:
         return redirect(reverse('home'))
-    return JsonResponse('Order Completed', safe=False)
