@@ -34,7 +34,7 @@ class Tag(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=7, decimal_places=2)
     img = models.ImageField(null=False, blank=True, upload_to='products/', default=None)
     tag = models.ManyToManyField(Tag, blank=True, related_name='product')
     slug = models.SlugField(max_length=50, unique=True, default=None)

@@ -406,6 +406,11 @@ button.logout-button:hover{
     justify-content: space-between;
     flex-wrap: wrap;
 }
+
+.no-orders-container{
+    margin-bottom: 40px;
+}
+
 /******* EMPTY CART ******/
 .presentation-text-empty-cart{
     padding-left: 30px;
@@ -585,6 +590,7 @@ button.edit-cart:hover{
 /******* ABOUT US PAGE ******/
 .about-img-container{
     width: 100%;
+    margin-bottom: 40px;
 }
 
 .location-map{

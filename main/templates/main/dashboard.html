@@ -147,12 +147,15 @@
         <hr>
 
         {% if not orders %}
+        <div class="no-orders-container">
             <h5>
                 You have no orders yet.
             </h5>
             <a href="{% url 'home' %}" >
                 <button type="button" class="logout-button back-to-store-button" >Back to store</button>
             </a>
+        </div>
+
         {% endif %}
 
         {% for i in orders %}

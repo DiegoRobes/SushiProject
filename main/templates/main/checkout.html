@@ -24,13 +24,36 @@
 
 <!-- PRESENTATION -->
 <div class="main-container">
-  <h1>
-    Checkout
-  </h1>
-  <h5>
-    We're almost there
-  </h5>
-    <hr>
+    <div class="register-presentation-img-container">
+        <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+            <div class="shipping-form-cart">
+                <div>
+                    <h2 class="display-fonts cart-title" >
+                        Checkout
+                    </h2>
+                    <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                        <p>
+                            Almost there!
+                        </p>
+                        <h5 style="margin-top: 0px; margin-bottom: 0;">
+                            Products: {{order.get_total_items}}
+                        </h5>
+                        <h5 style=" margin-bottom: 15px;">
+                            Total: ${{order.get_total_price}} USD
+                        </h5>
+                        <div class="cart-w-items-cover-buttons">
+                             <a href="{% url 'cart' %}">
+                                <button type="button" class="logout-button">Cart</button>
+                             </a>
+                            <a class="back-to-store-button" href="{% url 'home' %}">
+                                <button type="button" class="logout-button">Store</button>
+                             </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+    </div>
 </div>
 
 
@@ -215,9 +238,8 @@
             return response.json()
         })
         .then((data) =>{
-            console.log('data:', data)
             window.location.href = '{% url 'home' %}'
-            alert('transaction completed')
+            alert('Transaction completed. Thank you for your purchase!')
         })
     }
 </script>

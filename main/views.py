@@ -348,3 +348,4 @@ def process_order(request):
             return JsonResponse('Order Completed', safe=False)
     else:
         return redirect(reverse('home'))
+
