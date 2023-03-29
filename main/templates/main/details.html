@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Sushi by RC | Details {% endblock %}
+{% block title %} Sushi by RC | {{selected.name}} {% endblock %}
 {% block icons %}
     <li class="nav-item ms-auto">
         <a class="nav-link active navbar-icons" aria-current="page" href="{% url 'welcome' %}">
