@@ -6,7 +6,7 @@ function addToCart(id, action){
     console.log(id)
     console.log(action)
     if( user === 'AnonymousUser'){
-        console.log('User not authenticated, cannot create order')
+        updateOrder(id, action)
     }
     else{
         updateOrder(id, action)

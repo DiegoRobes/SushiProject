@@ -51,7 +51,9 @@ class Product(models.Model):
 # still in progress. we don't commit the object to the db until this bool is True
 # YOUR ORDER IS YOUR CART
 class Order(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, default='Guest')
+    f_name = models.CharField(max_length=200, null=True)
+    l_name = models.CharField(max_length=200, null=True)
     complete = models.BooleanField(default=False, null=True, blank=True)
     order_id = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
@@ -112,4 +114,12 @@ class ShippingAddress(models.Model):
     def __str__(self):
         return str(self.street_1) + str(self.street_2)
 
+
+class GuestUserOrder(models.Model):
+    f_name = models.CharField(max_length=200, null=True)
+    l_name = models.CharField(max_length=200, null=True)
+    phone = models.CharField(max_length=200, null=True)
+    email = models.EmailField(max_length=200)
+    address = models.ForeignKey(ShippingAddress, on_delete=models.SET_NULL, blank=True, null=True)
+    products = models.CharField(max_length=2000, null=True)
 

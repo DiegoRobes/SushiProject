@@ -48,6 +48,11 @@ def home(request):
     return render(request, "main/index.html", context=context)
 
 
+def about(request):
+    context = {}
+    return render(request, "main/about.html", context=context)
+
+
 def welcome(request):
     context = {}
     if request.user.is_authenticated:
@@ -198,11 +203,6 @@ def added_to_cart(request):
         return redirect(reverse('cart'))
 
 
-def about(request):
-    context = {}
-    return render(request, "main/about.html", context=context)
-
-
 def cart(request):
     # if the user is auth, then we get the customer linked to them
     context = {}
@@ -305,8 +305,6 @@ def update_item(request):
     data = json.loads(request.body)
     product_id = data['product_id']
     action = data['action']
-    print('p_id', product_id)
-    print('action', action)
     # once the request dict is here, we begin to create the order proper. for that, first we get the user. check that
     # var in base template. then get the id from the dictionary to get the right object from the db
     # after that we create a variable that contains an order and assign the customer to that order
@@ -314,20 +312,25 @@ def update_item(request):
     # product and order.
     # remember, the orderitems we create here will only be added the order of a logged-in user.
     # so if the user is not logged, nothing will happen to the cart
-    customer = request.user
-    product = m.Product.objects.get(id=product_id)
-    order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
-    orderItem, created = m.OrderItem.objects.get_or_create(order=order, product=product)
+    if request.user.is_authenticated:
+        customer = request.user
+        product = m.Product.objects.get(id=product_id)
+        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        orderItem, created = m.OrderItem.objects.get_or_create(order=order, product=product)
 
-    # then we check what the action is and see what to do. then save the orderItem object to the db
-    if action == 'add':
-        orderItem.quantity += 1
-    elif action == 'remove':
-        orderItem.quantity -= 1
-    orderItem.save()
+        # then we check what the action is and see what to do. then save the orderItem object to the db
+        if action == 'add':
+            orderItem.quantity += 1
+        elif action == 'remove':
+            orderItem.quantity -= 1
+        orderItem.save()
 
-    if action == 'delete' or orderItem.quantity <= 0:
-        orderItem.delete()
+        if action == 'delete' or orderItem.quantity <= 0:
+            orderItem.delete()
+    else:
+        request.session['productID_and_quantity'] = []
+        
+        print('order:', request.session['order'])
 
     return JsonResponse('item added to the cart', safe=False)
 
@@ -335,17 +338,14 @@ def update_item(request):
 def process_order(request):
     data = json.loads(request.body)
     transaction_id = datetime.datetime.now().timestamp()
-    if request.user.is_authenticated:
-        customer = request.user
-        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
-        order.order_id = transaction_id
+    customer = request.user
+    order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+    order.order_id = transaction_id
+    total_to_pay = float(data['total'])
+    order_total = float(order.get_total_price)
 
-        total_to_pay = float(data['total'])
-        order_total = float(order.get_total_price)
-        if total_to_pay == order_total:
-            order.complete = True
-            order.save()
-            return JsonResponse('Order Completed', safe=False)
-    else:
-        return redirect(reverse('home'))
+    if total_to_pay == order_total:
+        order.complete = True
+        order.save()
 
+    return JsonResponse('Order Completed', safe=False)
