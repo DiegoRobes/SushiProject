@@ -3,21 +3,9 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 
 
-# user is OneToOne bc one customer can only have one username
-class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    f_name = models.CharField(max_length=200, null=True)
-    l_name = models.CharField(max_length=200, null=True)
-    phone = models.CharField(max_length=200, null=True)
-    email = models.EmailField(max_length=200)
-
-    def __str__(self):
-        return str(self.f_name) + str(self.l_name)
-
-
 class Tag(models.Model):
     name = models.CharField(max_length=100)
-    description = models. TextField(max_length=100, default="")
+    description = models.TextField(max_length=100, default="")
     slug = models.SlugField(max_length=200, unique=True)
 
     # this one creates a slug for any new entry on the tag models
@@ -51,9 +39,7 @@ class Product(models.Model):
 # still in progress. we don't commit the object to the db until this bool is True
 # YOUR ORDER IS YOUR CART
 class Order(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, default='Guest')
-    f_name = models.CharField(max_length=200, null=True)
-    l_name = models.CharField(max_length=200, null=True)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     complete = models.BooleanField(default=False, null=True, blank=True)
     order_id = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
@@ -105,7 +91,6 @@ class OrderItem(models.Model):
 # to link it to a particular cart and all of its contents
 class ShippingAddress(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     street_1 = models.CharField(max_length=100, null=False, unique=False)
     street_2 = models.CharField(max_length=100, null=False, unique=False)
     zip = models.CharField(max_length=100, null=False, unique=False)
@@ -115,11 +100,62 @@ class ShippingAddress(models.Model):
         return str(self.street_1) + str(self.street_2)
 
 
-class GuestUserOrder(models.Model):
+# ------- MODELS FOR GUEST USERS -------- #
+class GuestUser(models.Model):
     f_name = models.CharField(max_length=200, null=True)
     l_name = models.CharField(max_length=200, null=True)
     phone = models.CharField(max_length=200, null=True)
     email = models.EmailField(max_length=200)
-    address = models.ForeignKey(ShippingAddress, on_delete=models.SET_NULL, blank=True, null=True)
-    products = models.CharField(max_length=2000, null=True)
 
+
+class GuestUserAddress(models.Model):
+    customer = models.ForeignKey(GuestUser, on_delete=models.CASCADE, blank=True, null=True)
+    street_1 = models.CharField(max_length=100, null=False, unique=False)
+    street_2 = models.CharField(max_length=100, null=False, unique=False)
+    zip = models.CharField(max_length=100, null=False, unique=False)
+
+
+class GuestUserOrder(models.Model):
+    customer = models.ForeignKey(GuestUser, on_delete=models.CASCADE, blank=True, null=True)
+    address = models.ForeignKey(GuestUserAddress, on_delete=models.SET_NULL, blank=True, null=True)
+    complete = models.BooleanField(default=False, null=True, blank=True)
+    order_id = models.CharField(max_length=200)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.id)
+
+    # this method returns the total price of the cart
+    @property
+    def get_total_price(self):
+        # first we get all the items using the orderitem model for it
+        items = self.guestuserorderitem_set.all()
+        # then the total price of each individual item by looping in the items var just created,
+        # and accessing each one's total cost (check that method in the orderitem model)
+        total = sum([float(item.get_total) for item in items])
+        return "{:.2f}".format(total)
+
+    # this method returns the total n° of products in the cart
+    @property
+    def get_total_items(self):
+        # first we get all the items using the orderitem model for it
+        items = self.guestuserorderitem_set.all()
+        # then the total quantity of each individual item by looping in the items var just created,
+        # and accessing each one's quantity field
+        total = sum([item.quantity for item in items])
+        return total
+
+
+class GuestUserOrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
+    order = models.ForeignKey(GuestUserOrder, on_delete=models.SET_NULL, blank=True, null=True)
+    quantity = models.IntegerField(default=0, null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    # this next method does the function of calculating the total value of the product and returning it.
+    # to do so, we need to access the price of the product, by using the foreign key of product, so
+    # we go product.price. to call the method: {{i.get_total}}
+    @property
+    def get_total(self):
+        total = self.product.price * self.quantity
+        return "{:.2f}".format(total)

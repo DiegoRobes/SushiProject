@@ -327,10 +327,46 @@ def update_item(request):
 
         if action == 'delete' or orderItem.quantity <= 0:
             orderItem.delete()
+
     else:
-        request.session['productID_and_quantity'] = []
-        
-        print('order:', request.session['order'])
+
+        if 'shopping_data' not in request.session:
+            request.session['shopping_data'] = []
+
+        try:
+            print('try')
+            for i in request.session['shopping_data']:
+                if i["product"] == product_id:
+                    print('ID')
+                    if action == 'add':
+                        i['quantity'] += 1
+
+                    elif action == 'remove':
+                        i['quantity'] -= 1
+
+                    if action == 'delete' or i['quantity'] <= 0:
+                        # delete this particular dict from the list in shopping data
+                        pass
+                else:
+                    print('else')
+                    new_add = {
+                        'product': product_id,
+                        'quantity': 0
+                    }
+                    if action == 'add':
+                        new_add['quantity'] += 1
+                    elif action == 'remove':
+                        new_add['quantity'] -= 1
+                    if action == 'delete' or new_add['quantity'] <= 0:
+                        # delete this particular dict from the list in shopping data
+                        pass
+                    cart_list = request.session["shopping_data"]
+                    cart_list.append(new_add)
+                    request.session["shopping_data"] = cart_list
+        except Exception as e:
+            print(e)
+
+        print(request.session['shopping_data'])
 
     return JsonResponse('item added to the cart', safe=False)
 
