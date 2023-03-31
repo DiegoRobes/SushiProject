@@ -204,6 +204,7 @@ def added_to_cart(request):
 
 
 def cart(request):
+    print(request.session['shopping_data'])
     # if the user is auth, then we get the customer linked to them
     context = {}
     if request.user.is_authenticated:
@@ -335,7 +336,8 @@ def update_item(request):
 
         try:
             print('try')
-            for i in request.session['shopping_data']:
+            cart_list = request.session["shopping_data"]
+            for i in cart_list:
                 if i["product"] == product_id:
                     print('ID')
                     if action == 'add':
@@ -347,24 +349,27 @@ def update_item(request):
                     if action == 'delete' or i['quantity'] <= 0:
                         # delete this particular dict from the list in shopping data
                         pass
-                else:
-                    print('else')
-                    new_add = {
-                        'product': product_id,
-                        'quantity': 0
-                    }
-                    if action == 'add':
-                        new_add['quantity'] += 1
-                    elif action == 'remove':
-                        new_add['quantity'] -= 1
-                    if action == 'delete' or new_add['quantity'] <= 0:
-                        # delete this particular dict from the list in shopping data
-                        pass
-                    cart_list = request.session["shopping_data"]
-                    cart_list.append(new_add)
                     request.session["shopping_data"] = cart_list
+                    print(request.session['shopping_data'])
+                    return JsonResponse('cart updated', safe=False)
         except Exception as e:
             print(e)
+
+        new_add = {
+            'product': product_id,
+            'quantity': 0
+        }
+        print(new_add)
+        if action == 'add':
+            new_add['quantity'] += 1
+        elif action == 'remove':
+            new_add['quantity'] -= 1
+        if action == 'delete' or new_add['quantity'] <= 0:
+            # delete this particular dict from the list in shopping data
+            pass
+        cart_list = request.session["shopping_data"]
+        cart_list.append(new_add)
+        request.session["shopping_data"] = cart_list
 
         print(request.session['shopping_data'])
 
