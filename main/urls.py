@@ -15,6 +15,7 @@ urlpatterns = [
     path('logout', v.logout_user, name="logout"),
     path('cart', v.cart, name="cart"),
     path('checkout', v.checkout, name="checkout"),
+    path('guest_checkout', v.guest_checkout, name="guest_checkout"),
     path('set_address', v.set_address, name='set_address'),
     path('dashboard', v.dashboard, name="dashboard"),
     path('delete_address', v.delete_address, name="delete_address"),

@@ -22,41 +22,42 @@
 
 {% block body %}
 
-<!-- PRESENTATION -->
-<div class="main-container">
-    <div class="register-presentation-img-container">
-        <img class="register-img" src="{% static 'images/cover.jpeg' %}">
-            <div class="shipping-form-cart">
-                <div>
-                    <h2 class="display-fonts cart-title" >
-                        Checkout
-                    </h2>
-                    <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
-                        <p>
-                            Almost there!
-                        </p>
-                        <h5 style="margin-top: 0px; margin-bottom: 0;">
-                            Products: {{order.get_total_items}}
-                        </h5>
-                        <h5 style=" margin-bottom: 15px;">
-                            Total: ${{order.get_total_price}} USD
-                        </h5>
-                        <div class="cart-w-items-cover-buttons">
-                             <a href="{% url 'cart' %}">
-                                <button type="button" class="logout-button">Cart</button>
-                             </a>
-                            <a class="back-to-store-button" href="{% url 'home' %}">
-                                <button type="button" class="logout-button">Store</button>
-                             </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-    </div>
-</div>
-
+<!-- IF USER IS SIGNED IN -->
 {% if request.user.is_authenticated %}
+
+    <!-- PRESENTATION -->
+    <div class="main-container">
+        <div class="register-presentation-img-container">
+            <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+                <div class="shipping-form-cart">
+                    <div>
+                        <h2 class="display-fonts cart-title" >
+                            Checkout
+                        </h2>
+                        <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                            <p>
+                                Almost there!
+                            </p>
+                            <h5 style="margin-top: 0px; margin-bottom: 0;">
+                                Products: {{order.get_total_items}}
+                            </h5>
+                            <h5 style=" margin-bottom: 15px;">
+                                Total: ${{order.get_total_price}} USD
+                            </h5>
+                            <div class="cart-w-items-cover-buttons">
+                                 <a href="{% url 'cart' %}">
+                                    <button type="button" class="logout-button">Cart</button>
+                                 </a>
+                                <a class="back-to-store-button" href="{% url 'home' %}">
+                                    <button type="button" class="logout-button">Store</button>
+                                 </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+    </div>
     <!-- BILLING INFO/SUMMARY -->
     {% if multiple_address %}
         <div class="main-container">
@@ -208,10 +209,114 @@
 </div>
 {% endif %}
 
+
+<!-- IF USER IS GUEST -->
+<!-- PRESENTATION -->
 <div class="main-container">
-    <h4>
-        HERE COMES THE CHECKOUT FOR THE GUST USER. WORK IN PROGRESS
-    </h4>
+        <div class="register-presentation-img-container">
+            <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+                <div class="shipping-form-cart">
+                    <div>
+                        <h2 class="display-fonts cart-title" >
+                            Checkout
+                        </h2>
+                        <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                            <p>
+                                Almost there!
+                            </p>
+                            <h5 style="margin-top: 0px; margin-bottom: 0;">
+                                Products: {{total_items}}
+                            </h5>
+                            <h5 style=" margin-bottom: 15px;">
+                                Total: ${{total_to_pay}} USD
+                            </h5>
+                            <div class="cart-w-items-cover-buttons">
+                                 <a href="{% url 'cart' %}">
+                                    <button type="button" class="logout-button">Cart</button>
+                                 </a>
+                                <a class="back-to-store-button" href="{% url 'home' %}">
+                                    <button type="button" class="logout-button">Store</button>
+                                 </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+    </div>
+<!-- FORMS -->
+<div class="checkout-billing-info-container">
+    <form id="guest_forms" method="post" action="{% url 'guest_checkout' %}">
+        {% csrf_token %}
+        <h3>
+            Please help us complete your order:
+        </h3>
+        {{ guest_user_form|crispy }}
+        {{ guest_shipping_form|crispy }}
+    </form>
+
+</div>
+<!-- ITEMS -->
+<div class="main-container ">
+    <hr>
+    <div class="checkout-billing-info-container">
+        <!-- SUMMARY TABLE -->
+        {% if not guest_user_items %}
+        <div class="checkout-summary-container">
+            <h4>
+                Your have no Orders yet!
+            </h4>
+            <a href="{% url 'home' %}">
+                <button class="add-button">
+                    Back to Store
+                </button>
+            </a>
+        </div>
+        {% endif %}
+
+
+        <!-- SUMMARY TABLE -->
+        {% if guest_user_items %}
+        <div class="checkout-summary-container">
+            <h4>
+                Your Order
+            </h4>
+            <table style="width: 100%; border-color: #333;">
+                {% for i in guest_user_items %}
+                <tr class="bottom-row">
+                    <td valign="top" style="width: 10%;">
+                        <div style="text-align: center;">
+                            <img class="checkout-item-img" src="{{ i.product.img.url }}">
+                        </div>
+                    </td>
+                    <td class="summary-table-cell" style="width: 75%;">
+                        <h6 style="margin: 0;">{{i.product.name}} - {{i.quantity}}</h6>
+                        <p style="">
+                            {{i.product.tag.all.0.name}}
+                        </p>
+                    </td>
+                    <td valign="top" style="width: 15%; text-align: right;">
+                        <h6>Price: ${{i.price}}</h6>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr >
+                    <td colspan="3" class="price-row-division">
+                        <h5>
+                            Total to pay: ${{total_to_pay}}
+                        </h5>
+                    </td>
+                </tr>
+            </table>
+            <!-- CHECKOUT BUTTON -->
+            <div class="checkout-button-container">
+                <button class="add-button" type="submit" form="guest_forms" >
+                    Pay Now
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
 

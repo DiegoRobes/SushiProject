@@ -324,8 +324,61 @@ def checkout(request):
                 print(e)
 
     else:
-        context = {'shit': 'SHIT'}
+        user_form = f.GuestUserSaveForm()
+        context['guest_user_form'] = user_form
+
+        guest_shipping_form = f.GuestUserShippingForm()
+        context['guest_shipping_form'] = guest_shipping_form
+
+        products_in_cart = []
+        try:
+            for i in request.session['shopping_data']:
+                add = {
+                    'product': m.Product.objects.get(id=i['product']),
+                    'quantity': i['quantity'],
+                }
+                add['price'] = add['product'].price * add['quantity']
+                products_in_cart.append(add)
+            context['guest_user_items'] = products_in_cart
+
+            total_items = sum(i['quantity'] for i in products_in_cart)
+            context['total_items'] = total_items
+
+            total_to_pay = sum((i['product'].price * i['quantity']) for i in products_in_cart)
+            context['total_to_pay'] = total_to_pay
+
+            if len(products_in_cart) == 0:
+                context = {'empty_cart': True}
+        except Exception as e:
+            print(e)
+        return render(request, "main/checkout.html", context=context)
     return render(request, "main/checkout.html", context=context)
+
+
+def guest_checkout(request):
+    context = {}
+    if request.POST:
+        guest_form = f.GuestUserSaveForm(request.POST)
+        if guest_form.is_valid():
+            address_form = f.GuestUserShippingForm(request.POST)
+            if address_form.is_valid():
+                new_guest_user = m.GuestUser(
+                    f_name=guest_form['f_name'].data,
+                    l_name=guest_form['l_name'].data,
+                    phone=guest_form['phone'].data,
+                    email=guest_form['email'].data,
+
+                )
+                new_guest_user.save()
+                new_address = m.GuestUserAddress(
+                    customer=new_guest_user,
+                    street_1=address_form['street_1'].data,
+                    street_2=address_form['street_2'].data,
+                    zip=address_form['zip'].data,
+                )
+                new_address.save()
+
+        return render(request, "main/checkout.html", context=context)
 
 
 def set_address(request):

@@ -31,3 +31,24 @@ class ShippingForm(forms.ModelForm):
 
 
 # ------- FORMS FOR GUEST USERS ---------#
+class GuestUserSaveForm(forms.ModelForm):
+    class Meta:
+        model = m.GuestUser
+        fields = ['f_name', 'l_name', 'phone', 'email']
+        labels = {
+            'f_name': _('First Name'),
+            'l_name': _('Last Name'),
+            'phone': _('Phone'),
+            'email': _('Email')
+        }
+
+
+class GuestUserShippingForm(forms.ModelForm):
+    class Meta:
+        model = m.GuestUserAddress
+        fields = ['street_1', 'street_2', 'zip']
+        labels = {
+            'street_1': _('Street 1'),
+            'street_2': _('Street 2'),
+            'zip': _('Zip')
+        }
