@@ -11,6 +11,10 @@ from django.contrib.auth.forms import AuthenticationForm
 
 
 def home(request):
+    if 'shopping_data' not in request.session:
+        request.session['shopping_data'] = []
+
+    print(request.session['shopping_data'])
     featured = m.Product.objects.filter(featured=True)[0]
 
     entry_tag = m.Tag.objects.filter(slug='entry')[0]
@@ -213,10 +217,32 @@ def cart(request):
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
         # then get the items of this particular order and send them to the context dict
         items = order.orderitem_set.all()
+        if len(items) == 0:
+            context['empty_cart'] = True
+            return render(request, "main/cart.html", context=context)
+
         context['items'] = items
         # finally we gather the whole order, in order to use the get methods for total prices and quantities
         context['order'] = order
+    else:
+        products_in_cart = []
+        for i in request.session['shopping_data']:
+            add = {
+                'product': m.Product.objects.get(id=i['product']),
+                'quantity': i['quantity'],
+            }
+            add['price'] = add['product'].price * add['quantity']
+            products_in_cart.append(add)
+        context['guest_user_items'] = products_in_cart
 
+        total_items = sum(i['quantity'] for i in products_in_cart)
+        context['total_items'] = total_items
+
+        total_to_pay = sum((i['product'].price * i['quantity']) for i in products_in_cart)
+        context['total_to_pay'] = total_to_pay
+
+        if len(products_in_cart) == 0:
+            context = {'empty_cart': True}
     return render(request, "main/cart.html", context=context)
 
 
@@ -330,10 +356,8 @@ def update_item(request):
             orderItem.delete()
 
     else:
-
         if 'shopping_data' not in request.session:
             request.session['shopping_data'] = []
-
         try:
             print('try')
             cart_list = request.session["shopping_data"]
@@ -347,11 +371,11 @@ def update_item(request):
                         i['quantity'] -= 1
 
                     if action == 'delete' or i['quantity'] <= 0:
-                        # delete this particular dict from the list in shopping data
-                        pass
+                        cart_list.remove(i)
+
                     request.session["shopping_data"] = cart_list
                     print(request.session['shopping_data'])
-                    return JsonResponse('cart updated', safe=False)
+                    return JsonResponse('item added to the cart', safe=False)
         except Exception as e:
             print(e)
 
@@ -359,19 +383,16 @@ def update_item(request):
             'product': product_id,
             'quantity': 0
         }
-        print(new_add)
+
         if action == 'add':
             new_add['quantity'] += 1
-        elif action == 'remove':
-            new_add['quantity'] -= 1
-        if action == 'delete' or new_add['quantity'] <= 0:
-            # delete this particular dict from the list in shopping data
-            pass
+
         cart_list = request.session["shopping_data"]
         cart_list.append(new_add)
         request.session["shopping_data"] = cart_list
 
         print(request.session['shopping_data'])
+        return JsonResponse('item added to the cart', safe=False)
 
     return JsonResponse('item added to the cart', safe=False)
 

@@ -19,7 +19,7 @@
 {% block body %}
 
 <!-- IF CART IS EMPTY -->
-{% if not items %}
+{% if empty_cart %}
 <!-- COVER -->
 <div class="main-container">
     <div class="register-presentation-img-container">
@@ -259,4 +259,127 @@
 
 </div>
 {% endif %}
+
+
+<!-- IF USER IS GUEST & HAS CART ITEMS -->
+{% if guest_user_items %}
+<!-- COVER -->
+<div class="main-container">
+    <div class="register-presentation-img-container">
+        <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+            <div class="shipping-form-cart">
+                <div>
+                    <h2 class="display-fonts cart-title" >
+                        Cart
+                    </h2>
+                    <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                        <p>
+                            Please review your order before checkout
+                        </p>
+                        <h5 style="margin-top: 0px; margin-bottom: 0;">
+                            Products: {{total_items}}
+                        </h5>
+                        <h5 style=" margin-bottom: 15px;">
+                            Total: ${{total_to_pay}} USD
+                        </h5>
+                        <div class="cart-w-items-cover-buttons">
+                             <a href="{% url 'checkout' %}">
+                                <button type="button" class="logout-button">Checkout</button>
+                             </a>
+                            <a class="back-to-store-button" href="{% url 'home' %}">
+                                <button type="button" class="logout-button">Store</button>
+                             </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+</div>
+
+<!-- CART -->
+<div class="main-container">
+
+    <!-- ITEMS -->
+    <div class="cart-items-container">
+
+        {% for i in guest_user_items %}
+        <table class="product-table cart-table" style="">
+                        <tr>
+                             <td>
+                                 <h4 class="article-name">{{ i.product.name }}</h4>
+                                 {{i.product.tag.all.0.name}}
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                 <img class="cart-item-img" src="{{ i.product.img.url }}">
+                            </td>
+                        </tr>
+                        <tr class="bottom-row" style="">
+                            <td style="text-align: center;">
+                                <table style="text-align: center; width: 100%">
+                                    <tr>
+                                        <td>
+                                            <table style="text-align: center; width: 100%">
+                                                <tr>
+                                                    <td style="text-align: center;">
+                                                        <h6>Quantity</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cart-table-quantity">
+                                                        <button class="cart-button"
+                                                                onclick="updateOrder({{i.product.id}}, 'remove')">
+                                                            <i class="fa-solid fa-minus"></i>
+                                                        </button>
+                                                        <h5>
+                                                            {{i.quantity}}
+                                                        </h5>
+                                                        <button class="cart-button"
+                                                                onclick="updateOrder({{i.product.id}}, 'add')">
+                                                            <i class="fa-solid fa-plus"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="text-align: center;">
+                                                        <h6>Product</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="">
+                                                        <h6>${{ i.price }}</h6>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <button class="danger"
+                                                        onclick="updateOrder({{i.product.id}}, 'delete')">Remove</button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+        {% endfor %}
+
+    </div>
+
+    <!-- CHECKOUT BUTTON -->
+    <div class="to-checkout-button-container">
+        <a href="{% url 'checkout' %}">
+            <button type="button" class="add-button" style="margin-bottom: 50px; height: 40px;">Checkout</button>
+        </a>
+    </div>
+
+</div>
+{% endif %}
+
+
+
 {% endblock %}
