@@ -28,3 +28,6 @@ class ShippingForm(forms.ModelForm):
             'street_2': _('Street 2'),
             'zip': _('Zip')
         }
+
+
+# ------- FORMS FOR GUEST USERS ---------#

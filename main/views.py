@@ -2,6 +2,7 @@ import json
 import datetime
 from . import forms as f
 from . import models as m
+from decimal import Decimal
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
@@ -203,12 +204,34 @@ def added_to_cart(request):
             orderItem.save()
             return redirect(reverse('cart'))
     else:
-        messages.warning(request, 'Please Sign Up or Login into your account to add products to your cart.')
+        product_id = int(request.POST['product_id'])
+        quantity = request.POST['quantity']
+
+        if 'shopping_data' not in request.session:
+            request.session['shopping_data'] = []
+        try:
+            cart_list = request.session["shopping_data"]
+            for i in cart_list:
+                if i["product"] == int(product_id):
+                    i['quantity'] += int(quantity)
+                    request.session["shopping_data"] = cart_list
+                    print(request.session['shopping_data'])
+                    return redirect(reverse('cart'))
+        except Exception as e:
+            print(e)
+
+        new_add = {
+            'product': int(product_id),
+            'quantity': int(quantity)
+        }
+        cart_list = request.session["shopping_data"]
+        cart_list.append(new_add)
+        request.session["shopping_data"] = cart_list
+
         return redirect(reverse('cart'))
 
 
 def cart(request):
-    print(request.session['shopping_data'])
     # if the user is auth, then we get the customer linked to them
     context = {}
     if request.user.is_authenticated:
@@ -226,23 +249,29 @@ def cart(request):
         context['order'] = order
     else:
         products_in_cart = []
-        for i in request.session['shopping_data']:
-            add = {
-                'product': m.Product.objects.get(id=i['product']),
-                'quantity': i['quantity'],
-            }
-            add['price'] = add['product'].price * add['quantity']
-            products_in_cart.append(add)
-        context['guest_user_items'] = products_in_cart
+        try:
+            for i in request.session['shopping_data']:
+                add = {
+                    'product': m.Product.objects.get(id=i['product']),
+                    'quantity': i['quantity'],
+                }
+                add['price'] = add['product'].price * add['quantity']
+                products_in_cart.append(add)
+            context['guest_user_items'] = products_in_cart
 
-        total_items = sum(i['quantity'] for i in products_in_cart)
-        context['total_items'] = total_items
+            total_items = sum(i['quantity'] for i in products_in_cart)
+            context['total_items'] = total_items
 
-        total_to_pay = sum((i['product'].price * i['quantity']) for i in products_in_cart)
-        context['total_to_pay'] = total_to_pay
+            total_to_pay = sum((i['product'].price * i['quantity']) for i in products_in_cart)
+            context['total_to_pay'] = total_to_pay
 
-        if len(products_in_cart) == 0:
+            if len(products_in_cart) == 0:
+                context = {'empty_cart': True}
+
+        except Exception as e:
+            print(e)
             context = {'empty_cart': True}
+        print(products_in_cart)
     return render(request, "main/cart.html", context=context)
 
 
@@ -294,6 +323,8 @@ def checkout(request):
             except Exception as e:
                 print(e)
 
+    else:
+        context = {'shit': 'SHIT'}
     return render(request, "main/checkout.html", context=context)
 
 
@@ -363,7 +394,7 @@ def update_item(request):
             cart_list = request.session["shopping_data"]
             for i in cart_list:
                 if i["product"] == product_id:
-                    print('ID')
+                    print('catch the ID')
                     if action == 'add':
                         i['quantity'] += 1
 

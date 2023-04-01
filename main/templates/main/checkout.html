@@ -56,97 +56,95 @@
     </div>
 </div>
 
+{% if request.user.is_authenticated %}
+    <!-- BILLING INFO/SUMMARY -->
+    {% if multiple_address %}
+        <div class="main-container">
+            <div class="checkout-billing-info-container">
+                <!-- BILLING INFO -->
+                <div class="register-form-pt2">
+                    <h4>
+                        Shipping Address
+                    </h4>
+                    <p style="color: grey;">
+                       Please choose one of your addresses
+                    </p>
+                    <hr>
+                    {% for i in multiple_address %}
+                    <div class="all-addresses-container">
+                        <form id="{{i.id}}" method="post" action="{% url 'set_address' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="street_1" value="{{i.street_1}}">
+                            <input type="hidden" name="street_2" value="{{i.street_2}}">
+                            <input type="hidden" name="zip" value="{{i.zip}}">
+                        </form>
+                        <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
+                        <div >
+                            <button class="save" type="submit" form="{{i.id}}"> Use this Address</button>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                    <div class="all-addresses-container">
+                        <h4>Use new Address</h4>
+                        <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
-<!-- BILLING INFO/SUMMARY -->
-{% if multiple_address %}
-    <div class="main-container">
-        <div class="checkout-billing-info-container">
-            <!-- BILLING INFO -->
-            <div class="register-form-pt2">
-                <h4>
-                    Shipping Address
-                </h4>
-                <p style="color: grey;">
-                   Please choose one of your addresses
-                </p>
-                <hr>
-                {% for i in multiple_address %}
-                <div class="all-addresses-container">
-                    <form id="{{i.id}}" method="post" action="{% url 'set_address' %}">
+    {% if single_address %}
+        <div class="main-container">
+            <div class="checkout-billing-info-container">
+                <!-- BILLING INFO -->
+                <div class="register-form-pt2">
+                    <h4>
+                        Shipping Address
+                    </h4>
+                    <p style="color: grey;">
+                       Your default address is:
+                    </p>
+                    <hr>
+                    <div class="">
+                        <form id="shipping_form">
+                            {{ shipping_form|crispy }}
+                        </form>
+                    </div>
+                    <hr>
+                    <div class="all-addresses-container">
+                        <h4>Use new Address</h4>
+                        <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if no_address%}
+        <div class="main-container">
+            <div class="checkout-billing-info-container">
+                <!-- BILLING INFO -->
+                <div class="register-form-pt2">
+                    <h4>
+                        Shipping Address
+                    </h4>
+                    <p style="color: grey;">
+                       Please register an Address to ship your service.
+                    </p>
+                    <hr>
+                    <form id="no_address_form" method="post" action="{% url 'checkout' %}">
                         {% csrf_token %}
-                        <input type="hidden" name="street_1" value="{{i.street_1}}">
-                        <input type="hidden" name="street_2" value="{{i.street_2}}">
-                        <input type="hidden" name="zip" value="{{i.zip}}">
-                    </form>
-                    <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
-                    <div >
-                        <button class="save" type="submit" form="{{i.id}}"> Use this Address</button>
-                    </div>
-                </div>
-                <hr>
-                {% endfor %}
-                <div class="all-addresses-container">
-                    <h4>Use new Address</h4>
-                    <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
-
-{% if single_address %}
-    <div class="main-container">
-        <div class="checkout-billing-info-container">
-            <!-- BILLING INFO -->
-            <div class="register-form-pt2">
-                <h4>
-                    Shipping Address
-                </h4>
-                <p style="color: grey;">
-                   Your default address is:
-                </p>
-                <hr>
-                <div class="">
-                    <form id="shipping_form">
                         {{ shipping_form|crispy }}
+                        <div class="submit-button-container">
+                            <button form="no_address_form" type="submit" class="save">
+                                <i class="fa-solid fa-plus"></i> Add </button>
+                        </div>
                     </form>
                 </div>
-                <hr>
-                <div class="all-addresses-container">
-                    <h4>Use new Address</h4>
-                    <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
-                </div>
             </div>
         </div>
-    </div>
-{% endif %}
-
-{% if no_address%}
-    <div class="main-container">
-        <div class="checkout-billing-info-container">
-            <!-- BILLING INFO -->
-            <div class="register-form-pt2">
-                <h4>
-                    Shipping Address
-                </h4>
-                <p style="color: grey;">
-                   Please register an Address to ship your service.
-                </p>
-                <hr>
-                <form id="no_address_form" method="post" action="{% url 'checkout' %}">
-                    {% csrf_token %}
-                    {{ shipping_form|crispy }}
-                    <div class="submit-button-container">
-                        <button form="no_address_form" type="submit" class="save">
-                            <i class="fa-solid fa-plus"></i> Add </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-{% endif %}
-
-
+    {% endif %}
 <div class="main-container ">
     <hr>
     <div class="checkout-billing-info-container">
@@ -208,6 +206,14 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
+
+<div class="main-container">
+    <h4>
+        HERE COMES THE CHECKOUT FOR THE GUST USER. WORK IN PROGRESS
+    </h4>
+</div>
+
 
 <script>
     function shippingData(){

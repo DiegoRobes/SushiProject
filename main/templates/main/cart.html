@@ -179,10 +179,8 @@
 
 <!-- CART -->
 <div class="main-container">
-
     <!-- ITEMS -->
     <div class="cart-items-container">
-
         {% for i in items %}
         <table class="product-table cart-table" style="">
                         <tr>
@@ -193,7 +191,11 @@
                         </tr>
                         <tr>
                             <td>
-                                 <img class="cart-item-img" src="{{ i.product.img.url }}">
+                                <div class="menu-item-img-container">
+                                <a href="{% url 'details' i.product.slug %}">
+                                    <img class="menu-item-img" src="{{ i.product.img.url }}">
+                                </a>
+                                </div>
                             </td>
                         </tr>
                         <tr class="bottom-row" style="">
@@ -313,7 +315,9 @@
                         </tr>
                         <tr>
                             <td>
-                                 <img class="cart-item-img" src="{{ i.product.img.url }}">
+                                <a href="{% url 'details' i.product.slug %}">
+                                    <img class="cart-item-img" src="{{ i.product.img.url }}">
+                                </a>
                             </td>
                         </tr>
                         <tr class="bottom-row" style="">
