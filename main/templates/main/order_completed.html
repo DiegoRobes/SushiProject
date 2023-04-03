@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %} Sushi by RC | Checkout {% endblock %}
+{% block icons %}
+    <li class="nav-item ms-auto">
+        <a class="nav-link active navbar-icons" aria-current="page" href="{% url 'welcome' %}">
+            <i class="fa-solid fa-user"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'cart' %}">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+    </li>
+    <li class="nav-item ms-auto" >
+        <a class="navbar-brand" style="" href="{% url 'about' %}">
+            <i class="fa-solid fa-circle-info"></i>
+        </a>
+    </li>
+{% endblock %}
+
+{% block body %}
+<div class="main-container">
+        <div class="register-presentation-img-container">
+            <img class="register-img" src="{% static 'images/cover.jpeg' %}">
+                <div class="shipping-form-cart">
+                    <div>
+                        <h2 class="display-fonts cart-title" >
+                            Order Complete!
+                        </h2>
+                        <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                            <p>
+                                Thanks for your purchase
+                            </p>
+                            <h5 style="margin-top: 0px; margin-bottom: 0;">
+                                Products: {{order.get_total_items}}
+                            </h5>
+                            <h5 style=" margin-bottom: 15px;">
+                                Total: ${{order.get_total_price}} USD
+                            </h5>
+                            <div class="cart-w-items-cover-buttons">
+                                <a class="back-to-store-button" href="{% url 'home' %}">
+                                    <button type="button" class="logout-button">Store</button>
+                                 </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+    </div>
+
+<div class="main-container" style="text-align: center; margin-top: 40px;">
+    <h1>Your order ID is:</h1>
+    <h1>{{order.order_id}}</h1>
+</div>
+{% endblock %}

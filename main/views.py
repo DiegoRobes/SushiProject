@@ -370,6 +370,7 @@ def guest_checkout(request):
 
                 )
                 new_guest_user.save()
+
                 new_address = m.GuestUserAddress(
                     customer=new_guest_user,
                     street_1=address_form['street_1'].data,
@@ -378,7 +379,36 @@ def guest_checkout(request):
                 )
                 new_address.save()
 
-        return render(request, "main/checkout.html", context=context)
+                transaction_id = datetime.datetime.now().timestamp()
+                new_guest_order = m.GuestUserOrder(customer=new_guest_user,
+                                                   address=new_address,
+                                                   order_id=transaction_id,
+                                                   complete=True)
+                new_guest_order.save()
+
+                products_in_cart = []
+                try:
+                    for i in request.session['shopping_data']:
+                        add = {
+                            'product': m.Product.objects.get(id=i['product']),
+                            'quantity': i['quantity'],
+                        }
+                        add['price'] = add['product'].price * add['quantity']
+                        products_in_cart.append(add)
+                except Exception as e:
+                    print('Exception from guest_checkout, line 390: ', e)
+                try:
+                    for i in products_in_cart:
+                        new_item = m.GuestUserOrderItem(product=i['product'],
+                                                        order=new_guest_order,
+                                                        quantity=i['quantity'])
+                        new_item.save()
+
+                except Exception as e:
+                    print(e)
+                context = {'order': new_guest_order}
+                request.session['shopping_data'] = []
+        return render(request, "main/order_completed.html", context=context)
 
 
 def set_address(request):
