@@ -134,3 +134,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/dashboard'
 LOGOUT_REDIRECT_URL = ''
+
+STRIPE_KEYS = {
+    "secret_key": os.environ.get("STRIPE_SECRET_KEY"),
+    "public_key": os.environ.get("STRIPE_PUBLISHABLE_KEY"),
+}

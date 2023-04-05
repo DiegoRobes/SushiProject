@@ -34,15 +34,16 @@
                         <h2 class="display-fonts cart-title" >
                             Checkout
                         </h2>
-                        <div class="cart-overview-container" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                        <div class="cart-overview-container" style="display: flex;
+                        flex-direction: column; justify-content: flex-end;">
                             <p>
-                                Almost there!
+                                Almost there! Last review of your order
                             </p>
                             <h5 style="margin-top: 0px; margin-bottom: 0;">
                                 Products: {{order.get_total_items}}
                             </h5>
                             <h5 style=" margin-bottom: 15px;">
-                                Total: ${{order.get_total_price}} USD
+                                Total: ${{ order.get_total_price }} USD
                             </h5>
                             <div class="cart-w-items-cover-buttons">
                                  <a href="{% url 'cart' %}">
@@ -210,6 +211,7 @@
 {% endif %}
 
 
+{% if not request.user.is_authenticated %}
 <!-- IF USER IS GUEST -->
 <!-- PRESENTATION -->
 <div class="main-container">
@@ -318,7 +320,7 @@
         {% endif %}
     </div>
 </div>
-
+{% endif %}
 
 <script>
     function shippingData(){

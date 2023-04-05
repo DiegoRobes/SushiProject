@@ -2,13 +2,18 @@ import json
 import datetime
 from . import forms as f
 from . import models as m
-from decimal import Decimal
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
+
+# stripe imports
+import stripe
+from django.conf import settings # new
+from django.http.response import JsonResponse # new
+from django.views.decorators.csrf import csrf_exempt # new
 
 
 def home(request):
@@ -255,9 +260,11 @@ def cart(request):
                     'product': m.Product.objects.get(id=i['product']),
                     'quantity': i['quantity'],
                 }
+                add['stripe_price_id'] = add['product'].stripe_price_id
                 add['price'] = add['product'].price * add['quantity']
                 products_in_cart.append(add)
             context['guest_user_items'] = products_in_cart
+            print(products_in_cart)
 
             total_items = sum(i['quantity'] for i in products_in_cart)
             context['total_items'] = total_items
@@ -337,6 +344,7 @@ def checkout(request):
                     'product': m.Product.objects.get(id=i['product']),
                     'quantity': i['quantity'],
                 }
+                add['stripe_price_id'] = add['product'].stripe_price_id
                 add['price'] = add['product'].price * add['quantity']
                 products_in_cart.append(add)
             context['guest_user_items'] = products_in_cart
@@ -525,3 +533,58 @@ def process_order(request):
         order.save()
 
     return JsonResponse('Order Completed', safe=False)
+
+
+@csrf_exempt
+def stripe_config(request):
+    if request.method == 'GET':
+        stripe_key_config = {'public_key': settings.STRIPE_KEYS['public_key']}
+        print(stripe_key_config)
+        return JsonResponse(stripe_key_config, safe=False)
+
+
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == 'GET':
+        domain_url = 'http://127.0.0.18000/'
+        stripe.api_key = settings.STRIPE_KEYS['public_key']
+
+        products_in_cart = []
+        for i in request.session['shopping_data']:
+            add = {
+                'product': m.Product.objects.get(id=i['product']),
+                'quantity': i['quantity'],
+            }
+            add['stripe_price_id'] = add['product'].stripe_price_id
+            add['price'] = add['product'].price * add['quantity']
+            products_in_cart.append(add)
+
+        line_items = []
+        for i in products_in_cart:
+            item = {
+                'quantity': i['quantity'],
+                'price': i['stripe_price_id']
+            }
+            line_items.append(item)
+        print('LINE ITEMS:', line_items)
+
+        try:
+            # Create new Checkout Session for the order
+            # Other optional params include:
+            # [billing_address_collection] - to display billing address details on the page
+            # [customer] - if you have an existing Stripe Customer ID
+            # [payment_intent_data] - capture the payment later
+            # [customer_email] - prefill the email input in the form
+            # For full details see https://stripe.com/docs/api/checkout/sessions/create
+
+            # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
+            checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=domain_url + 'cancelled/',
+                payment_method_types=['card'],
+                mode='payment',
+                line_items=line_items
+            )
+            return JsonResponse({'sessionId': checkout_session['id']})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})

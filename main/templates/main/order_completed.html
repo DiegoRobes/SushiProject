@@ -54,5 +54,10 @@
 <div class="main-container" style="text-align: center; margin-top: 40px;">
     <h1>Your order ID is:</h1>
     <h1>{{order.order_id}}</h1>
+    <div class="cart-w-items-cover-buttons">
+        <a class="back-to-store-button" href="{% url 'home' %}">
+            <button type="button" class="logout-button">Back to Store</button>
+        </a>
+    </div>
 </div>
 {% endblock %}

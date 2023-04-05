@@ -27,6 +27,7 @@ class Product(models.Model):
     tag = models.ManyToManyField(Tag, blank=True, related_name='product')
     slug = models.SlugField(max_length=50, unique=True, default=None)
     featured = models.BooleanField(default=False)
+    stripe_price_id = models.CharField(max_length=2000, null=True)
 
     def __str__(self):
         return self.name

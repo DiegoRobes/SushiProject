@@ -15,10 +15,11 @@ urlpatterns = [
     path('logout', v.logout_user, name="logout"),
     path('cart', v.cart, name="cart"),
     path('checkout', v.checkout, name="checkout"),
-    path('guest_checkout', v.guest_checkout, name="guest_checkout"),
     path('set_address', v.set_address, name='set_address'),
     path('dashboard', v.dashboard, name="dashboard"),
     path('delete_address', v.delete_address, name="delete_address"),
     path('update_item', v.update_item, name="update_item"),
-    path('process_order', v.process_order, name='process_order'),
+    # stripe urls
+    path('config/', v.stripe_config, name='stripe_config'),  # new
+    path('create-checkout-session/', v.create_checkout_session),  # new
 ]
