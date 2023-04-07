@@ -139,3 +139,5 @@ STRIPE_KEYS = {
     "secret_key": os.environ.get("STRIPE_SECRET_KEY"),
     "public_key": os.environ.get("STRIPE_PUBLISHABLE_KEY"),
 }
+
+STRIPE_ENDPOINT_SECRET = 'whsec_524e115deacae6a16e11edcc3150ba162fd5cdb0c3f5508967363664451c7770'

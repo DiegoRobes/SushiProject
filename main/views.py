@@ -4,10 +4,11 @@ from . import forms as f
 from . import models as m
 from django.urls import reverse
 from django.contrib import messages
-from django.http import JsonResponse
 from django.contrib.auth import login, logout
+from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
+
 
 # stripe imports
 import stripe
@@ -416,7 +417,7 @@ def guest_checkout(request):
                     print(e)
                 context = {'order': new_guest_order}
                 request.session['shopping_data'] = []
-        return render(request, "main/order_completed.html", context=context)
+        return render(request, "main/order_complete.html", context=context)
 
 
 def set_address(request):
@@ -539,15 +540,14 @@ def process_order(request):
 def stripe_config(request):
     if request.method == 'GET':
         stripe_key_config = {'public_key': settings.STRIPE_KEYS['public_key']}
-        print(stripe_key_config)
         return JsonResponse(stripe_key_config, safe=False)
 
 
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == 'GET':
-        domain_url = 'http://127.0.0.18000/'
-        stripe.api_key = settings.STRIPE_KEYS['public_key']
+        domain_url = 'http://127.0.0.1:8000/'
+        stripe.api_key = settings.STRIPE_KEYS['secret_key']
 
         products_in_cart = []
         for i in request.session['shopping_data']:
@@ -566,8 +566,6 @@ def create_checkout_session(request):
                 'price': i['stripe_price_id']
             }
             line_items.append(item)
-        print('LINE ITEMS:', line_items)
-
         try:
             # Create new Checkout Session for the order
             # Other optional params include:
@@ -579,12 +577,45 @@ def create_checkout_session(request):
 
             # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
             checkout_session = stripe.checkout.Session.create(
-                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url=domain_url + 'cancelled/',
+                success_url=domain_url + 'order_complete/',
+                cancel_url=domain_url + 'checkout',
                 payment_method_types=['card'],
                 mode='payment',
                 line_items=line_items
             )
+            request.session['order_complete'] = True
             return JsonResponse({'sessionId': checkout_session['id']})
         except Exception as e:
             return JsonResponse({'error': str(e)})
+
+
+def order_complete(request):
+    context = {}
+    return render(request, 'main/order_complete.html', context=context)
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    stripe.api_key = settings.STRIPE_KEYS['secret_key']
+    endpoint_secret = settings.STRIPE_ENDPOINT_SECRET
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        print("Payment was successful!!!.")
+        # run some custom code here
+
+    return HttpResponse(status=200)

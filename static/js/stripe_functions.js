@@ -1,13 +1,12 @@
 console.log("Sanity check!");
 
 // Get Stripe publishable key
-fetch("config")
+fetch("config/")
 .then((result) => { return result.json(); })
 .then((data) => {
   // Initialize Stripe.js
   const stripe = Stripe(data.public_key);
 
-  // new
   // Event handler
   document.querySelector("#submitBtn").addEventListener("click", () => {
     // Get Checkout Session ID
