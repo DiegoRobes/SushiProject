@@ -8,13 +8,12 @@ from django.contrib.auth import login, logout
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
-
-
+from django.contrib.auth.decorators import login_required
 # stripe imports
 import stripe
-from django.conf import settings # new
-from django.http.response import JsonResponse # new
-from django.views.decorators.csrf import csrf_exempt # new
+from django.conf import settings
+from django.http.response import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 def home(request):
@@ -113,6 +112,7 @@ def login_user(request):
             if form.is_valid():
                 user = form.get_user()
                 login(request, user)
+
                 return redirect(reverse('dashboard'))
         else:
             form = AuthenticationForm(request)
@@ -478,6 +478,41 @@ def update_item(request):
         if action == 'delete' or orderItem.quantity <= 0:
             orderItem.delete()
 
+        if 'shopping_data' not in request.session:
+            request.session['shopping_data'] = []
+        try:
+            print('try')
+            cart_list = request.session["shopping_data"]
+            for i in cart_list:
+                if i["product"] == product_id:
+                    print('catch the ID')
+                    if action == 'add':
+                        i['quantity'] += 1
+
+                    elif action == 'remove':
+                        i['quantity'] -= 1
+
+                    if action == 'delete' or i['quantity'] <= 0:
+                        cart_list.remove(i)
+
+                    request.session["shopping_data"] = cart_list
+                    print('update item. uth user', request.session['shopping_data'])
+                    return JsonResponse('item added to the cart', safe=False)
+        except Exception as e:
+            print(e)
+
+        new_add = {
+            'product': product_id,
+            'quantity': 0
+        }
+
+        if action == 'add':
+            new_add['quantity'] += 1
+
+        cart_list = request.session["shopping_data"]
+        cart_list.append(new_add)
+        request.session["shopping_data"] = cart_list
+
     else:
         if 'shopping_data' not in request.session:
             request.session['shopping_data'] = []
@@ -536,6 +571,11 @@ def process_order(request):
     return JsonResponse('Order Completed', safe=False)
 
 
+def order_complete(request):
+    context = {}
+    return render(request, 'main/order_complete.html', context=context)
+
+
 @csrf_exempt
 def stripe_config(request):
     if request.method == 'GET':
@@ -563,7 +603,7 @@ def create_checkout_session(request):
         for i in products_in_cart:
             item = {
                 'quantity': i['quantity'],
-                'price': i['stripe_price_id']
+                'price': i['stripe_price_id'],
             }
             line_items.append(item)
         try:
@@ -581,17 +621,11 @@ def create_checkout_session(request):
                 cancel_url=domain_url + 'checkout',
                 payment_method_types=['card'],
                 mode='payment',
-                line_items=line_items
+                line_items=line_items,
             )
-            request.session['order_complete'] = True
             return JsonResponse({'sessionId': checkout_session['id']})
         except Exception as e:
             return JsonResponse({'error': str(e)})
-
-
-def order_complete(request):
-    context = {}
-    return render(request, 'main/order_complete.html', context=context)
 
 
 @csrf_exempt
@@ -616,6 +650,13 @@ def stripe_webhook(request):
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         print("Payment was successful!!!.")
-        # run some custom code here
+        transaction_id = datetime.datetime.now().timestamp()
+        customer = request.user
+        print('customer id for final checkout: ', customer)
+        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        order.order_id = transaction_id
+        order.complete = True
+        order.save()
+        print("order completed!!!")
 
     return HttpResponse(status=200)
