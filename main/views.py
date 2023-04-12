@@ -8,7 +8,6 @@ from django.contrib.auth import login, logout
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required
 # stripe imports
 import stripe
 from django.conf import settings
@@ -19,8 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 def home(request):
     if 'shopping_data' not in request.session:
         request.session['shopping_data'] = []
-
-    print(request.session['shopping_data'])
+    print('index shopping id;', request.session['shopping_data'])
     featured = m.Product.objects.filter(featured=True)[0]
 
     entry_tag = m.Tag.objects.filter(slug='entry')[0]
@@ -302,7 +300,7 @@ def checkout(request):
         # here we create or get the order, and find one that matches the customer in turn and is also open
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
         request.session['order_id'] = order.id
-        print('order id: ', request.session['order'])
+
         # then get the items of this particular order and send them to the context dict
         items = order.orderitem_set.all()
         context['items'] = items
@@ -483,8 +481,10 @@ def update_item(request):
         if 'shopping_data' not in request.session:
             request.session['shopping_data'] = []
         try:
-            print('try')
+            print(request.session['shopping_data'])
+            print('try from auth userrrrr')
             cart_list = request.session["shopping_data"]
+            print('cart list:', cart_list)
             for i in cart_list:
                 if i["product"] == product_id:
                     print('catch the ID')
@@ -494,11 +494,11 @@ def update_item(request):
                     elif action == 'remove':
                         i['quantity'] -= 1
 
-                    if action == 'delete' or i['quantity'] <= 0:
+                    elif action == 'delete' or i['quantity'] == 0:
                         cart_list.remove(i)
 
                     request.session["shopping_data"] = cart_list
-                    print('update item. uth user', request.session['shopping_data'])
+                    print('update item from auth user', request.session['shopping_data'])
                     return JsonResponse('item added to the cart', safe=False)
         except Exception as e:
             print(e)
@@ -661,6 +661,7 @@ def stripe_webhook(request):
         order.order_id = transaction_id
         order.complete = True
         order.save()
+        request.session['shopping_data'] = []
         print("Payment was successful!!!.")
 
         """transaction_id = datetime.datetime.now().timestamp()
