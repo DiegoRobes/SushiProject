@@ -301,6 +301,8 @@ def checkout(request):
         customer = request.user
         # here we create or get the order, and find one that matches the customer in turn and is also open
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+        request.session['order_id'] = order.id
+        print('order id: ', request.session['order'])
         # then get the items of this particular order and send them to the context dict
         items = order.orderitem_set.all()
         context['items'] = items
@@ -617,6 +619,7 @@ def create_checkout_session(request):
 
             # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
             checkout_session = stripe.checkout.Session.create(
+                client_reference_id=request.session['order_id'],
                 success_url=domain_url + 'order_complete/',
                 cancel_url=domain_url + 'checkout',
                 payment_method_types=['card'],
@@ -633,6 +636,7 @@ def stripe_webhook(request):
     stripe.api_key = settings.STRIPE_KEYS['secret_key']
     endpoint_secret = settings.STRIPE_ENDPOINT_SECRET
     payload = request.body
+
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None
 
@@ -649,14 +653,23 @@ def stripe_webhook(request):
 
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
-        print("Payment was successful!!!.")
+        session = event['data']['object']["client_reference_id"]
+        print('payload:', session)
+
         transaction_id = datetime.datetime.now().timestamp()
+        order = m.Order.objects.get(id=session)
+        order.order_id = transaction_id
+        order.complete = True
+        order.save()
+        print("Payment was successful!!!.")
+
+        """transaction_id = datetime.datetime.now().timestamp()
         customer = request.user
         print('customer id for final checkout: ', customer)
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
         order.order_id = transaction_id
         order.complete = True
         order.save()
-        print("order completed!!!")
+        print("order completed!!!")"""
 
     return HttpResponse(status=200)
