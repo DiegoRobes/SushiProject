@@ -22,11 +22,10 @@
 
 {% block body %}
 
-<!-- IF USER IS SIGNED IN -->
-{% if request.user.is_authenticated %}
-
-    <!-- PRESENTATION -->
-    <div class="main-container">
+{% if not request.user.is_authenticated %}
+<!-- IF USER IS GUEST -->
+<!-- PRESENTATION -->
+<div class="main-container">
         <div class="register-presentation-img-container">
             <img class="register-img" src="{% static 'images/cover.jpeg' %}">
                 <div class="shipping-form-cart">
@@ -34,16 +33,16 @@
                         <h2 class="display-fonts cart-title" >
                             Checkout
                         </h2>
-                        <div class="cart-overview-container" style="display: flex;
-                        flex-direction: column; justify-content: flex-end;">
+                        <div class="cart-overview-container"
+                             style="display: flex; flex-direction: column; justify-content: flex-end;">
                             <p>
-                                Almost there! Last review of your order
+                                Almost there!
                             </p>
                             <h5 style="margin-top: 0px; margin-bottom: 0;">
-                                Products: {{order.get_total_items}}
+                                Products: {{total_items}}
                             </h5>
                             <h5 style=" margin-bottom: 15px;">
-                                Total: ${{ order.get_total_price }} USD
+                                Total: ${{total_to_pay}} USD
                             </h5>
                             <div class="cart-w-items-cover-buttons">
                                  <a href="{% url 'cart' %}">
@@ -59,99 +58,28 @@
                 </div>
         </div>
     </div>
-    <!-- BILLING INFO/SUMMARY -->
-    {% if multiple_address %}
-        <div class="main-container">
-            <div class="checkout-billing-info-container">
-                <!-- BILLING INFO -->
-                <div class="register-form-pt2">
-                    <h4>
-                        Shipping Address
-                    </h4>
-                    <p style="color: grey;">
-                       Please choose one of your addresses
-                    </p>
-                    <hr>
-                    {% for i in multiple_address %}
-                    <div class="all-addresses-container">
-                        <form id="{{i.id}}" method="post" action="{% url 'set_address' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="street_1" value="{{i.street_1}}">
-                            <input type="hidden" name="street_2" value="{{i.street_2}}">
-                            <input type="hidden" name="zip" value="{{i.zip}}">
-                        </form>
-                        <h4>{{i.street_1}} - {{i.street_2}} - {{i.zip}}</h4>
-                        <div >
-                            <button class="save" type="submit" form="{{i.id}}"> Use this Address</button>
-                        </div>
-                    </div>
-                    <hr>
-                    {% endfor %}
-                    <div class="all-addresses-container">
-                        <h4>Use new Address</h4>
-                        <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+<!-- FORMS -->
 
-    {% if single_address %}
-        <div class="main-container">
-            <div class="checkout-billing-info-container">
-                <!-- BILLING INFO -->
-                <div class="register-form-pt2">
-                    <h4>
-                        Shipping Address
-                    </h4>
-                    <p style="color: grey;">
-                       Your default address is:
-                    </p>
-                    <hr>
-                    <div class="">
-                        <form id="shipping_form">
-                            {{ shipping_form|crispy }}
-                        </form>
-                    </div>
-                    <hr>
-                    <div class="all-addresses-container">
-                        <h4>Use new Address</h4>
-                        <button class="save"> <i class="fa-solid fa-plus"></i> Add </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+<div class="checkout-billing-info-container">
+    <form id="guest_forms" method="post" action="{% url 'guest_checkout' %}">
+        {% csrf_token %}
+        <h3>
+            Please help us complete your order:
+        </h3>
+        {{ guest_user_form|crispy }}
+        {{ guest_shipping_form|crispy }}
+        <button class="add-button" type="submit" form="guest_forms" >
+            Set Address
+        </button>
+    </form>
+</div>
 
-    {% if no_address%}
-        <div class="main-container">
-            <div class="checkout-billing-info-container">
-                <!-- BILLING INFO -->
-                <div class="register-form-pt2">
-                    <h4>
-                        Shipping Address
-                    </h4>
-                    <p style="color: grey;">
-                       Please register an Address to ship your service.
-                    </p>
-                    <hr>
-                    <form id="no_address_form" method="post" action="{% url 'checkout' %}">
-                        {% csrf_token %}
-                        {{ shipping_form|crispy }}
-                        <div class="submit-button-container">
-                            <button form="no_address_form" type="submit" class="save">
-                                <i class="fa-solid fa-plus"></i> Add </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+<!-- ITEMS -->
 <div class="main-container ">
     <hr>
     <div class="checkout-billing-info-container">
         <!-- SUMMARY TABLE -->
-        {% if not items %}
+        {% if not guest_user_items %}
         <div class="checkout-summary-container">
             <h4>
                 Your have no Orders yet!
@@ -166,13 +94,13 @@
 
 
         <!-- SUMMARY TABLE -->
-        {% if items %}
+        {% if guest_user_items %}
         <div class="checkout-summary-container">
             <h4>
                 Your Order
             </h4>
             <table style="width: 100%; border-color: #333;">
-                {% for i in items %}
+                {% for i in guest_user_items %}
                 <tr class="bottom-row">
                     <td valign="top" style="width: 10%;">
                         <div style="text-align: center;">
@@ -186,22 +114,21 @@
                         </p>
                     </td>
                     <td valign="top" style="width: 15%; text-align: right;">
-                        <h6>Price: ${{i.get_total}}</h6>
+                        <h6>Price: ${{i.price}}</h6>
                     </td>
                 </tr>
                 {% endfor %}
                 <tr >
                     <td colspan="3" class="price-row-division">
                         <h5>
-                            Total to pay: ${{order.get_total_price}}
+                            Total to pay: ${{total_to_pay}}
                         </h5>
                     </td>
                 </tr>
             </table>
             <!-- CHECKOUT BUTTON -->
             <div class="checkout-button-container">
-                <button class="add-button submitBtn" id="submitBtn" type="submit">
-                <!--form="shipping_form" onclick="shippingData()" -->
+                <button class="add-button submitBtn" id="submitBtn" type="submit" >
                     Pay Now
                 </button>
             </div>
@@ -219,9 +146,9 @@
             'email':'{{request.user.email}}',
         }
         var shipping = {
-            'street_1':'{{shipping_form.street_1.value}}',
-            'street_2':'{{shipping_form.street_2.value}}',
-            'zip':'{{shipping_form.zip.value}}',
+            'street_1':'{{guest_user_form.street_1.value}}',
+            'street_2':'{{guest_user_form.street_2.value}}',
+            'zip':'{{guest_user_form.zip.value}}',
         }
         console.log(total_to_pay)
         console.log(shipping)

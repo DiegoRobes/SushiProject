@@ -18,7 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 def home(request):
     if 'shopping_data' not in request.session:
         request.session['shopping_data'] = []
-    print('index shopping id;', request.session['shopping_data'])
+    print('index shopping data:', request.session['shopping_data'])
     featured = m.Product.objects.filter(featured=True)[0]
 
     entry_tag = m.Tag.objects.filter(slug='entry')[0]
@@ -120,6 +120,7 @@ def login_user(request):
 
 def logout_user(request):
     if request.user.is_authenticated:
+        # request.session['shopping_data'] = []
         logout(request)
         return redirect(reverse('login'))
 
@@ -330,8 +331,87 @@ def checkout(request):
                     return render(request, "main/checkout.html", context=context)
             except Exception as e:
                 print(e)
+        return render(request, "main/checkout.html", context=context)
+    else:
+        return redirect(reverse('guest_checkout'))
+
+
+def guest_checkout(request):
+    context = {}
+    if request.POST:
+        guest_form = f.GuestUserSaveForm(request.POST)
+        if guest_form.is_valid():
+            address_form = f.GuestUserShippingForm(request.POST)
+            if address_form.is_valid():
+                new_guest_user = m.GuestUser(
+                    f_name=guest_form['f_name'].data,
+                    l_name=guest_form['l_name'].data,
+                    phone=guest_form['phone'].data,
+                    email=guest_form['email'].data,
+
+                )
+                new_guest_user.save()
+                data = {'f_name': new_guest_user.f_name,
+                        'l_name': new_guest_user.l_name,
+                        'phone': new_guest_user.phone,
+                        'email': new_guest_user.email
+                        }
+                user_form = f.GuestUserSaveForm(data)
+                context['guest_user_form'] = user_form
+
+                new_address = m.GuestUserAddress(
+                    customer=new_guest_user,
+                    street_1=address_form['street_1'].data,
+                    street_2=address_form['street_2'].data,
+                    zip=address_form['zip'].data,
+                )
+                new_address.save()
+                data = {'street_1': new_address.street_1,
+                        'street_2': new_address.street_2,
+                        'zip': new_address.zip}
+                address_form = f.GuestUserShippingForm(data)
+                context['guest_shipping_form'] = address_form
+
+                new_guest_order = m.GuestUserOrder(customer=new_guest_user,
+                                                   address=new_address,
+                                                   complete=False)
+                new_guest_order.save()
+                request.session['order_id'] = 'GU_' + str(new_guest_order.id)
+                print(request.session['order_id'])
+
+                products_in_cart = []
+                try:
+                    for i in request.session['shopping_data']:
+                        add = {
+                            'product': m.Product.objects.get(id=i['product']),
+                            'quantity': i['quantity'],
+                        }
+                        add['price'] = add['product'].price * add['quantity']
+                        add['stripe_price_id'] = add['product'].stripe_price_id
+                        products_in_cart.append(add)
+                        context['guest_user_items'] = products_in_cart
+
+                        total_items = sum(i['quantity'] for i in products_in_cart)
+                        context['total_items'] = total_items
+
+                        total_to_pay = sum((i['product'].price * i['quantity']) for i in products_in_cart)
+                        context['total_to_pay'] = total_to_pay
+
+                except Exception as e:
+                    print('Exception from guest_checkout, line 410: ', e)
+                try:
+                    for i in products_in_cart:
+                        new_item = m.GuestUserOrderItem(product=i['product'],
+                                                        order=new_guest_order,
+                                                        quantity=i['quantity'])
+                        new_item.save()
+                except Exception as e:
+                    print(e)
+                context['order'] = new_guest_order
+        return render(request, "main/guest_checkout.html", context=context)
 
     else:
+        context = {}
         user_form = f.GuestUserSaveForm()
         context['guest_user_form'] = user_form
 
@@ -360,64 +440,7 @@ def checkout(request):
                 context = {'empty_cart': True}
         except Exception as e:
             print(e)
-        return render(request, "main/checkout.html", context=context)
-    return render(request, "main/checkout.html", context=context)
-
-
-def guest_checkout(request):
-    context = {}
-    if request.POST:
-        guest_form = f.GuestUserSaveForm(request.POST)
-        if guest_form.is_valid():
-            address_form = f.GuestUserShippingForm(request.POST)
-            if address_form.is_valid():
-                new_guest_user = m.GuestUser(
-                    f_name=guest_form['f_name'].data,
-                    l_name=guest_form['l_name'].data,
-                    phone=guest_form['phone'].data,
-                    email=guest_form['email'].data,
-
-                )
-                new_guest_user.save()
-
-                new_address = m.GuestUserAddress(
-                    customer=new_guest_user,
-                    street_1=address_form['street_1'].data,
-                    street_2=address_form['street_2'].data,
-                    zip=address_form['zip'].data,
-                )
-                new_address.save()
-
-                transaction_id = datetime.datetime.now().timestamp()
-                new_guest_order = m.GuestUserOrder(customer=new_guest_user,
-                                                   address=new_address,
-                                                   order_id=transaction_id,
-                                                   complete=True)
-                new_guest_order.save()
-
-                products_in_cart = []
-                try:
-                    for i in request.session['shopping_data']:
-                        add = {
-                            'product': m.Product.objects.get(id=i['product']),
-                            'quantity': i['quantity'],
-                        }
-                        add['price'] = add['product'].price * add['quantity']
-                        products_in_cart.append(add)
-                except Exception as e:
-                    print('Exception from guest_checkout, line 390: ', e)
-                try:
-                    for i in products_in_cart:
-                        new_item = m.GuestUserOrderItem(product=i['product'],
-                                                        order=new_guest_order,
-                                                        quantity=i['quantity'])
-                        new_item.save()
-
-                except Exception as e:
-                    print(e)
-                context = {'order': new_guest_order}
-                request.session['shopping_data'] = []
-        return render(request, "main/order_complete.html", context=context)
+        return render(request, "main/guest_checkout.html", context=context)
 
 
 def set_address(request):
@@ -574,6 +597,7 @@ def process_order(request):
 
 
 def order_complete(request):
+    request.session['shopping_data'] = []
     context = {}
     return render(request, 'main/order_complete.html', context=context)
 
@@ -656,21 +680,22 @@ def stripe_webhook(request):
         session = event['data']['object']["client_reference_id"]
         print('payload:', session)
 
-        transaction_id = datetime.datetime.now().timestamp()
-        order = m.Order.objects.get(id=session)
-        order.order_id = transaction_id
-        order.complete = True
-        order.save()
-        request.session['shopping_data'] = []
-        print("Payment was successful!!!.")
-
-        """transaction_id = datetime.datetime.now().timestamp()
-        customer = request.user
-        print('customer id for final checkout: ', customer)
-        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
-        order.order_id = transaction_id
-        order.complete = True
-        order.save()
-        print("order completed!!!")"""
+        if session.startswith('GU_'):
+            replacements = [('G', ''), ('U', ''), ('_', '')]
+            for char, replacement in replacements:
+                if char in session:
+                    session = session.replace(char, replacement)
+            transaction_id = datetime.datetime.now().timestamp()
+            order = m.GuestUserOrder.objects.get(id=session)
+            order.order_id = transaction_id
+            order.complete = True
+            order.save()
+            print('payload:', session)
+        else:
+            transaction_id = datetime.datetime.now().timestamp()
+            order = m.Order.objects.get(id=session)
+            order.order_id = transaction_id
+            order.complete = True
+            order.save()
 
     return HttpResponse(status=200)
