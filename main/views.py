@@ -318,17 +318,23 @@ def checkout(request):
                 new_address.save()
                 return redirect(reverse('checkout'))
         else:
+            # get customer, matching opened order, items in the order, and send the order id to the session,
+            # as well as  order and items to the context
             customer = request.user
-            # here we create or get the order, and find one that matches the customer in turn and is also open
             order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
             request.session['order_id'] = order.id
+            print('order ID for auth user sent to session', request.session['order_id'])
 
-            # then get the items of this particular order and send them to the context dict
             items = order.orderitem_set.all()
-            context['items'] = items
-            print('items', items)
 
+            context['items'] = items
+            context['order'] = order
+
+            # restart the 'shopping_data' everytime this page is requested, this is the easiest way to  avoid
+            # duplicates in the session everytime the items query is updated.
+            # Then iterate through the items query and use their properties to feed each dictionary in 'shopping_data'
             products_in_cart = []
+            request.session['shopping_data'] = []
 
             try:
                 for i in items:
@@ -340,21 +346,44 @@ def checkout(request):
                     add['stripe_price_id'] = add['product'].stripe_price_id
                     products_in_cart.append(add)
 
-                    # check for duplicates and avoid adding them to the session
                     add_to_SD = {
                         'product': int(i.product.id),
                         'quantity': i.quantity
                     }
-                    request.session['shopping_data'].append(add_to_SD)
-                print('shopping data after items loop', request.session['shopping_data'])
 
+                    request.session['shopping_data'].append(add_to_SD)
             except Exception as e:
                 print(e)
-            context['items'] = items
+
             if not items:
                 return render(request, "main/checkout.html", context=context)
 
+            # finally check if the cx has no, one or many address and use the context dict properly
+            try:
+                address = m.ShippingAddress.objects.filter(customer=request.user.id)
+                if len(address) > 1:
+                    context['multiple_address'] = address
+                    return render(request, "main/checkout.html", context=context)
+                if len(address) == 1:
+                    data = {'street_1': address[0].street_1,
+                            'street_2': address[0].street_2,
+                            'zip': address[0].zip}
+                    shipping_form = f.ShippingForm(data)
+                    context['shipping_form'] = shipping_form
+                    context['single_address'] = address[0]
+                    return render(request, "main/checkout.html", context=context)
+                else:
+                    shipping_form = f.ShippingForm()
+                    context['no_address'] = True
+                    context['shipping_form'] = shipping_form
+                    return render(request, "main/checkout.html", context=context)
+            except Exception as e:
+                print(e)
+
+            # this is the main render of the GET method
             return render(request, "main/checkout.html", context=context)
+    # if user in not authenticated, we have a function specially made for them. this is to avoid making this one too
+    # convoluted
     else:
         return redirect(reverse('guest_checkout'))
 
@@ -644,7 +673,7 @@ def create_checkout_session(request):
 
         products_in_cart = []
 
-        print('shopping data from ccs:', request.session['shopping_data'] )
+        print('shopping data from ccs:', request.session['shopping_data'])
         for i in request.session['shopping_data']:
             add = {
                 'product': m.Product.objects.get(id=i['product']),
