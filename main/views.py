@@ -18,7 +18,9 @@ from django.views.decorators.csrf import csrf_exempt
 def home(request):
     if 'shopping_data' not in request.session:
         request.session['shopping_data'] = []
+
     print('index shopping data:', request.session['shopping_data'])
+
     featured = m.Product.objects.filter(featured=True)[0]
 
     entry_tag = m.Tag.objects.filter(slug='entry')[0]
@@ -73,12 +75,14 @@ def welcome(request):
 # if the method is request and the validation is complete, we can create and save a User into the db just as
 # easy as that
 def sign_up(request):
+    context = {}
     if request.user.is_authenticated:
         return redirect(reverse('dashboard'))
 
     register_form = f.RegisterForm()
     shipping_form = f.ShippingForm()
-    context = {'register_form': register_form, 'shipping_form': shipping_form}
+    context['register_form'] = register_form
+    context['shipping_form'] = shipping_form
     if request.POST:
         register_form = f.RegisterForm(request.POST)
         shipping_form = f.ShippingForm(request.POST)
@@ -110,9 +114,9 @@ def login_user(request):
             if form.is_valid():
                 user = form.get_user()
                 login(request, user)
-
                 return redirect(reverse('dashboard'))
         else:
+            request.session['shopping_data'] = []
             form = AuthenticationForm(request)
             context = {'form': form}
             return render(request, "registration/login.html", context=context)
@@ -245,6 +249,23 @@ def cart(request):
         order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
         # then get the items of this particular order and send them to the context dict
         items = order.orderitem_set.all()
+
+        products_in_cart = []
+        print('right before making auth user cart', request.session['shopping_data'])
+        try:
+            for i in request.session['shopping_data']:
+                add = {
+                    'product': m.Product.objects.get(id=i['product']),
+                    'quantity': i['quantity'],
+                }
+                add['stripe_price_id'] = add['product'].stripe_price_id
+                add['price'] = add['product'].price * add['quantity']
+                products_in_cart.append(add)
+            context['guest_user_items'] = products_in_cart
+            print('this is the auth user cat', products_in_cart)
+        except Exception as e:
+            print(e)
+
         if len(items) == 0:
             context['empty_cart'] = True
             return render(request, "main/cart.html", context=context)
@@ -296,42 +317,44 @@ def checkout(request):
                 )
                 new_address.save()
                 return redirect(reverse('checkout'))
-
-        customer = request.user
-        # here we create or get the order, and find one that matches the customer in turn and is also open
-        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
-        request.session['order_id'] = order.id
-
-        # then get the items of this particular order and send them to the context dict
-        items = order.orderitem_set.all()
-        context['items'] = items
-        if not items:
-            return render(request, "main/checkout.html", context=context)
         else:
-            # finally we gather the whole order, in order to use the get methods for total prices and quantities
-            context['order'] = order
-            context['user'] = request.user
+            customer = request.user
+            # here we create or get the order, and find one that matches the customer in turn and is also open
+            order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
+            request.session['order_id'] = order.id
+
+            # then get the items of this particular order and send them to the context dict
+            items = order.orderitem_set.all()
+            context['items'] = items
+            print('items', items)
+
+            products_in_cart = []
+
             try:
-                address = m.ShippingAddress.objects.filter(customer=request.user.id)
-                if len(address) > 1:
-                    context['multiple_address'] = address
-                    return render(request, "main/checkout.html", context=context)
-                if len(address) == 1:
-                    data = {'street_1': address[0].street_1,
-                            'street_2': address[0].street_2,
-                            'zip': address[0].zip}
-                    shipping_form = f.ShippingForm(data)
-                    context['shipping_form'] = shipping_form
-                    context['single_address'] = address[0]
-                    return render(request, "main/checkout.html", context=context)
-                else:
-                    shipping_form = f.ShippingForm()
-                    context['no_address'] = True
-                    context['shipping_form'] = shipping_form
-                    return render(request, "main/checkout.html", context=context)
+                for i in items:
+                    add = {
+                        'product': m.Product.objects.get(id=i.product.id),
+                        'quantity': i.quantity,
+                    }
+                    add['price'] = add['product'].price * add['quantity']
+                    add['stripe_price_id'] = add['product'].stripe_price_id
+                    products_in_cart.append(add)
+
+                    # check for duplicates and avoid adding them to the session
+                    add_to_SD = {
+                        'product': int(i.product.id),
+                        'quantity': i.quantity
+                    }
+                    request.session['shopping_data'].append(add_to_SD)
+                print('shopping data after items loop', request.session['shopping_data'])
+
             except Exception as e:
                 print(e)
-        return render(request, "main/checkout.html", context=context)
+            context['items'] = items
+            if not items:
+                return render(request, "main/checkout.html", context=context)
+
+            return render(request, "main/checkout.html", context=context)
     else:
         return redirect(reverse('guest_checkout'))
 
@@ -380,6 +403,7 @@ def guest_checkout(request):
                 print(request.session['order_id'])
 
                 products_in_cart = []
+                print('this is the cart from POST guest', request.session['shopping_data'])
                 try:
                     for i in request.session['shopping_data']:
                         add = {
@@ -390,6 +414,7 @@ def guest_checkout(request):
                         add['stripe_price_id'] = add['product'].stripe_price_id
                         products_in_cart.append(add)
                         context['guest_user_items'] = products_in_cart
+                        print('this is the p in cart list from guest POST', products_in_cart)
 
                         total_items = sum(i['quantity'] for i in products_in_cart)
                         context['total_items'] = total_items
@@ -419,6 +444,7 @@ def guest_checkout(request):
         context['guest_shipping_form'] = guest_shipping_form
 
         products_in_cart = []
+        print('this is the cart from the guest user check', request.session['shopping_data'])
         try:
             for i in request.session['shopping_data']:
                 add = {
@@ -430,12 +456,13 @@ def guest_checkout(request):
                 products_in_cart.append(add)
             context['guest_user_items'] = products_in_cart
 
+            print('this is the p in cart list from guest user', products_in_cart)
+
             total_items = sum(i['quantity'] for i in products_in_cart)
             context['total_items'] = total_items
 
             total_to_pay = sum((i['product'].price * i['quantity']) for i in products_in_cart)
             context['total_to_pay'] = total_to_pay
-
             if len(products_in_cart) == 0:
                 context = {'empty_cart': True}
         except Exception as e:
@@ -616,6 +643,8 @@ def create_checkout_session(request):
         stripe.api_key = settings.STRIPE_KEYS['secret_key']
 
         products_in_cart = []
+
+        print('shopping data from ccs:', request.session['shopping_data'] )
         for i in request.session['shopping_data']:
             add = {
                 'product': m.Product.objects.get(id=i['product']),

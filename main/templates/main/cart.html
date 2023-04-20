@@ -140,7 +140,7 @@
 </div>
 {% endif %}
 
-
+{% if request.user.is_authenticated %}
 <!-- IF CART HAS ITEMS -->
 {% if items %}
 <!-- COVER -->
@@ -261,8 +261,10 @@
 
 </div>
 {% endif %}
+{% endif %}
 
 
+{% if not request.user.is_authenticated %}
 <!-- IF USER IS GUEST & HAS CART ITEMS -->
 {% if guest_user_items %}
 <!-- COVER -->
@@ -383,7 +385,7 @@
 
 </div>
 {% endif %}
-
+{% endif %}
 
 
 {% endblock %}
