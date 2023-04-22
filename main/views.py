@@ -15,12 +15,9 @@ from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
+# to render the home view, we first query the products from the DB using their corresponding tags and send them to
+# the page to be rendered via the context dictionary
 def home(request):
-    if 'shopping_data' not in request.session:
-        request.session['shopping_data'] = []
-
-    print('index shopping data:', request.session['shopping_data'])
-
     featured = m.Product.objects.filter(featured=True)[0]
 
     entry_tag = m.Tag.objects.filter(slug='entry')[0]
@@ -45,24 +42,17 @@ def home(request):
                'desserts': desserts,
                'refreshments': refreshments}
 
-    if request.user.is_authenticated:
-        customer = request.user
-        # here we create or get the order, and find one that matches the customer in turn and is also open
-        order, created = m.Order.objects.get_or_create(customer=customer, complete=False)
-        # then get the items of this particular order and send them to the context dict
-        items = order.orderitem_set.all()
-        context['items'] = items
-        # finally we gather the whole order, in order to use the get methods for total prices and quantities
-        context['order'] = order
-
     return render(request, "main/index.html", context=context)
 
 
+# the about us page, no operation needs to be performed here. just a simple render
 def about(request):
     context = {}
     return render(request, "main/about.html", context=context)
 
 
+# here first we check if the user is authenticated already, if so, we send them to the user dashboard (see bellow)
+# if user is still anonymous, present them with both options for sign up or login
 def welcome(request):
     context = {}
     if request.user.is_authenticated:
@@ -71,9 +61,9 @@ def welcome(request):
         return render(request, "main/welcome.html", context=context)
 
 
-# get the register form and send it into the template via context.
-# if the method is request and the validation is complete, we can create and save a User into the db just as
-# easy as that
+# first check if user is authenticated, if so, send them to dashboard
+# in GET method, create an instance of both RegisterForm and ShippingForm (imported above), and send them to the
+# template via context
 def sign_up(request):
     context = {}
     if request.user.is_authenticated:
@@ -83,6 +73,12 @@ def sign_up(request):
     shipping_form = f.ShippingForm()
     context['register_form'] = register_form
     context['shipping_form'] = shipping_form
+
+    # in POST method, gather the info from the forms and validate the forms. Register form can be easily saved into the
+    # database because it uses the UserCreationForm class (check forms.py). For the address, we manually get the info
+    # and create a new object to be placed into the database. Finally, login the newly created user and send them to
+    # their user dashboard with a success message.
+    # if either form is not valid, send a warning message and repeat the process.
     if request.POST:
         register_form = f.RegisterForm(request.POST)
         shipping_form = f.ShippingForm(request.POST)
@@ -105,6 +101,12 @@ def sign_up(request):
     return render(request, "registration/sign_up.html", context=context)
 
 
+# first check if user is authenticated, if so, send them to dashboard
+# to log in the user we will use the ready-made AuthenticationForm, this way the process will be done using the powers
+# of Django. in GET method we create the form and send it via context to the render. in POST, we use the get_user()
+# method from the AuthenticationForm to check if email and password are correct, and if so, login the user via the
+# built-in login() function that comes with django (imported above). finally, we redirect the user to their dashboard
+# once logged in
 def login_user(request):
     if request.user.is_authenticated:
         return redirect(reverse('dashboard'))
@@ -116,25 +118,32 @@ def login_user(request):
                 login(request, user)
                 return redirect(reverse('dashboard'))
         else:
-            request.session['shopping_data'] = []
             form = AuthenticationForm(request)
             context = {'form': form}
             return render(request, "registration/login.html", context=context)
 
 
+# use the built-in logout() function, feeding it the request, to log out the user. also, when this happens,
+# request.session['shopping_data'] get emptied to ensure the next user has a brand-new shopping cart
 def logout_user(request):
     if request.user.is_authenticated:
-        # request.session['shopping_data'] = []
+        request.session['shopping_data'] = []
         logout(request)
         return redirect(reverse('login'))
 
 
+# first check if user is authenticated, if not, send them to 'welcome' page to log in or sing up
 def dashboard(request):
     context = {}
+    # if user is authenticated, first get all orders matching this user from the db and send the query to the context
+    # dict, so we can extract the info on these orders to be rendered
     if request.user.is_authenticated:
         customer = request.user
         orders = m.Order.objects.filter(customer=customer, complete=True)
         context['orders'] = orders
+
+        # the POST method on this view is used to handle the addition of new addresses to the DB, note how every address
+        # is linked to the corresponding user
         if request.POST:
             shipping_form = f.ShippingForm(request.POST)
             if shipping_form.is_valid():
@@ -147,14 +156,22 @@ def dashboard(request):
                 new_address.save()
             return redirect(reverse('dashboard'))
 
+        # the GET method is used to try to make a query with the addresses linked to this particular user. 3 previsions
+        # are made: 1- they have more than one address, 2- they have only one address, 3- they don't have any addresses
+        # yet. these previsions are important because they change the way the page will be rendered. check how in every
+        # case we pass the shipping_form form to the context so the user can create a new address, but also the context
+        # can change depending on the number of addresses we can link to the user. this adaptable context will determine
+        # the way the page is rendered
         else:
             try:
                 address = m.ShippingAddress.objects.filter(customer=request.user.id)
+                # multiple addresses
                 if len(address) > 1:
                     shipping_form = f.ShippingForm()
                     context['shipping_form'] = shipping_form
                     context['multiple_address'] = address
                     return render(request, "main/dashboard.html", context=context)
+                # single address
                 if len(address) == 1:
                     data = {'street_1': address[0].street_1,
                             'street_2': address[0].street_2,
@@ -163,6 +180,7 @@ def dashboard(request):
                     context['shipping_form'] = shipping_form
                     context['single_address'] = address[0]
                     return render(request, "main/dashboard.html", context=context)
+                # no address
                 else:
                     shipping_form = f.ShippingForm()
                     context['no_address'] = True
@@ -173,17 +191,20 @@ def dashboard(request):
 
             return render(request, "main/dashboard.html", context=context)
     else:
-        return redirect(reverse('home'))
+        return redirect(reverse('welcome'))
 
 
+# this function handles an XML request made by a javascript function inside the dashboard.html file. the function asks
+# the server to delete from the database an address that the user has requested. We unpack the body of the request to
+# get the ID of the address we need to delete, find it in the DB and simply use the delete() function. This XML function
+# is better understood from the html file
 def delete_address(request):
     if request.user.is_authenticated:
         data = json.loads(request.body)
         address_id = data['address_id']
         to_delete = m.ShippingAddress.objects.get(id=address_id)
         to_delete.delete()
-        return JsonResponse('item added to the cart', safe=False)
-
+        return JsonResponse('Address has been deleted', safe=False)
     else:
         return redirect(reverse('home'))
 
@@ -338,14 +359,6 @@ def checkout(request):
 
             try:
                 for i in items:
-                    add = {
-                        'product': m.Product.objects.get(id=i.product.id),
-                        'quantity': i.quantity,
-                    }
-                    add['price'] = add['product'].price * add['quantity']
-                    add['stripe_price_id'] = add['product'].stripe_price_id
-                    products_in_cart.append(add)
-
                     add_to_SD = {
                         'product': int(i.product.id),
                         'quantity': i.quantity
@@ -358,7 +371,7 @@ def checkout(request):
             if not items:
                 return render(request, "main/checkout.html", context=context)
 
-            # finally check if the cx has no, one or many address and use the context dict properly
+            # finally check if the cx has no, one or many addresses and use the context dict properly
             try:
                 address = m.ShippingAddress.objects.filter(customer=request.user.id)
                 if len(address) > 1:
